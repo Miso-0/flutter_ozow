@@ -34,11 +34,11 @@ class PaymmentHandlerWidget extends ConsumerStatefulWidget {
 }
 
 class _PaymmentHandlerWidgetState extends ConsumerState<PaymmentHandlerWidget> {
-  final notifyUrl = 'misomenze.co.za';
+  final notifyUrl = 'notify_url';
   final id = '10000';
   final amount = 100.0;
-  final siteCode = 'MIS-MIS-010';
-  final key = '7af91f93bb2b4d728c8ef829508eb85c';
+  final siteCode = 'site_code';
+  final key = 'private_key';
   final bankRef = 'ABC123';
   final isTest = true;
   final PaymentType type = PaymentType.order;
