@@ -78,10 +78,10 @@ class FlutterOzow extends StatelessWidget {
 
   ///Because this package uses a WebView, you can listen to the WebView events
   ///using the following callbacks.
-  final Function(String)? onPageStarted;
-  final Function(String)? onPageFinished;
-  final Function(int)? onProgress;
-  final Function(WebResourceError)? onWebResourceError;
+  final void Function(String)? onPageStarted;
+  final void Function(String)? onPageFinished;
+  final void Function(int)? onProgress;
+  final void Function(WebResourceError)? onWebResourceError;
 
   /// Constructs the URI and request body.
   ///
