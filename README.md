@@ -7,6 +7,7 @@ For more information and reference, visit [ozow.com](https://ozow.com/).
 **Disclaimer**: The developers of this package are independent and are not affiliated with Ozow. All Ozow images and trademarks are owned by Ozow.
 
 
+
 [![pub package](https://img.shields.io/pub/v/flutter_ozow.svg)](https://pub.dev/packages/flutter_ozow)
 
 Flutter Ozow is a Flutter package that simplifies the integration of the Ozow payment gateway into your Flutter apps. Utilizing the [webview_flutter](https://pub.dev/packages/webview_flutter) package, it loads the Ozow payment portal directly within your app for a seamless user experience.
