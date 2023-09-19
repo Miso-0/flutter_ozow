@@ -10,7 +10,7 @@ For more information and reference, visit [ozow.com](https://ozow.com/).
 
 [![pub package](https://img.shields.io/pub/v/flutter_ozow.svg)](https://pub.dev/packages/flutter_ozow)
 
-Flutter Ozow is a Flutter package that simplifies the integration of the Ozow payment gateway into your Flutter apps. Utilizing the [webview_flutter](https://pub.dev/packages/webview_flutter) package, it loads the Ozow payment portal directly within your app for a seamless user experience.
+Flutter_ozow is a Flutter package that simplifies the integration of the Ozow payment gateway into your Flutter apps. Utilizing the [webview_flutter](https://pub.dev/packages/webview_flutter) package, it loads the Ozow payment portal directly within your app for a seamless user experience.
 
 ## Features
 
@@ -62,7 +62,7 @@ FlutterOzow(
   privateKey: 'your-private-key',
   siteCode: 'your-site-code',
   bankRef: 'bank-reference',
-  amount: 50.0,
+  amount: 50.00,
   isTest: true,
 )
 ```
