@@ -19,6 +19,18 @@ Flutter Ozow is a Flutter package that simplifies the integration of the Ozow pa
 - **Extra Parameters**: Allows for additional optional parameters for further customization.
 - **In-App Payment**: Built-in WebView for a seamless payment process.
 
+|             | Android        | iOS   |
+|-------------|----------------|-------|
+| **Support** | SDK 19+ or 20+ | 11.0+ |
+
+```groovy
+android {
+    defaultConfig {
+        minSdkVersion 19
+    }
+}
+```
+
 ## Installation
 
 To get started, add `flutter_ozow` to your `pubspec.yaml` file:
