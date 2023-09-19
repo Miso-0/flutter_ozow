@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -116,10 +117,27 @@ class FlutterOzow extends StatelessWidget {
         ..setBackgroundColor(const Color(0x00000000))
         ..setNavigationDelegate(
           NavigationDelegate(
-            onProgress: (int progress) {},
-            onPageStarted: (String url) {},
-            onPageFinished: (String url) {},
-            onWebResourceError: (WebResourceError error) {},
+            onProgress: (int progress) {
+              if (kDebugMode) {
+                print(
+                    'Flutter_ozow: WebView is loading (progress : $progress%)');
+              }
+            },
+            onPageStarted: (String url) {
+              if (kDebugMode) {
+                print('Flutter_ozow: Page started loading: $url');
+              }
+            },
+            onPageFinished: (String url) {
+              if (kDebugMode) {
+                print('Flutter_ozow: Page finished loading: $url');
+              }
+            },
+            onWebResourceError: (WebResourceError error) {
+              if (kDebugMode) {
+                print('Flutter_ozow: Error loading page: ${error.description}');
+              }
+            },
           ),
         )
         ..loadRequest(
