@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -28,6 +27,10 @@ class FlutterOzow extends StatelessWidget {
     this.optional3,
     this.optional4,
     this.optional5,
+    this.onPageStarted,
+    this.onPageFinished,
+    this.onProgress,
+    this.onWebResourceError,
   });
 
   /// Unique transaction ID or order number generated from your backend.
@@ -73,6 +76,13 @@ class FlutterOzow extends StatelessWidget {
   final String? optional4;
   final String? optional5;
 
+  ///Because this package uses a WebView, you can listen to the WebView events
+  ///using the following callbacks.
+  final Function(String)? onPageStarted;
+  final Function(String)? onPageFinished;
+  final Function(int)? onProgress;
+  final Function(WebResourceError)? onWebResourceError;
+
   /// Constructs the URI and request body.
   ///
   /// This prepares the data needed for making the POST request.
@@ -117,27 +127,32 @@ class FlutterOzow extends StatelessWidget {
         ..setBackgroundColor(const Color(0x00000000))
         ..setNavigationDelegate(
           NavigationDelegate(
-            onProgress: (int progress) {
-              if (kDebugMode) {
-                print(
-                    'Flutter_ozow: WebView is loading (progress : $progress%)');
-              }
-            },
-            onPageStarted: (String url) {
-              if (kDebugMode) {
-                print('Flutter_ozow: Page started loading: $url');
-              }
-            },
-            onPageFinished: (String url) {
-              if (kDebugMode) {
-                print('Flutter_ozow: Page finished loading: $url');
-              }
-            },
-            onWebResourceError: (WebResourceError error) {
-              if (kDebugMode) {
-                print('Flutter_ozow: Error loading page: ${error.description}');
-              }
-            },
+            onProgress: onProgress ??
+                (int progress) {
+                  if (kDebugMode) {
+                    print(
+                        'Flutter_ozow: WebView is loading (progress : $progress%)');
+                  }
+                },
+            onPageStarted: onPageStarted ??
+                (String url) {
+                  if (kDebugMode) {
+                    print('Flutter_ozow: Page started loading: $url');
+                  }
+                },
+            onPageFinished: onPageFinished ??
+                (String url) {
+                  if (kDebugMode) {
+                    print('Flutter_ozow: Page finished loading: $url');
+                  }
+                },
+            onWebResourceError: onWebResourceError ??
+                (WebResourceError error) {
+                  if (kDebugMode) {
+                    print(
+                        'Flutter_ozow: Error loading page: ${error.description}');
+                  }
+                },
           ),
         )
         ..loadRequest(
