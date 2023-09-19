@@ -79,4 +79,4 @@ For more examples, see the `example` directory.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/Miso-0/flutter_ozow/blob/main/flutter_ozow/LICENSE)https://github.com/Miso-0/flutter_ozow/blob/main/flutter_ozow/LICENSE](LICENSE) file for details.
