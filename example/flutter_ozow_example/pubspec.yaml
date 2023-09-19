@@ -15,9 +15,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   cloud_firestore: ^3.0.0
   hooks_riverpod: ^1.0.0
-  git:
-      url: https://github.com/Miso-0/flutter_ozow.git
-      ref: main
+  flutter_ozow: ^0.0.1
+
 
 dev_dependencies:
   flutter_test:
