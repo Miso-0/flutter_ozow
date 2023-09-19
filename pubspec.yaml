@@ -1,7 +1,9 @@
 name: flutter_ozow
 description: A new Flutter package project.
 version: 0.0.1
-homepage:
+homepage: 'https://pub.dev/publishers/misomenze.co.za/packages' # Remove this line if you wish to publish to pub.dev
+
+publish_to: 'https://pub.dev/publishers/misomenze.co.za/packages' # Remove this line if you wish to publish to pub.dev
 
 environment:
   sdk: '>=3.1.0 <4.0.0'

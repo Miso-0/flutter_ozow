@@ -88,6 +88,36 @@ FlutterOzow(
 | optional4     | Additional optional parameter. | No  | String? |
 | optional5     | Additional optional parameter. | No  | String? |
 
+# Handling Ozow Responses
+
+Handling Ozow responses is crucial for merchants to update their backend systems properly. There are two types of responses you'll need to manage:
+
+## Types of Responses
+
+1. Redirect Response
+2. Notification Response
+
+For more information, you can visit [Ozow Documentation](https://hub.ozow.com/docs/step-2-process-ozow-response).
+
+## Hash Validation
+
+It's important to validate the received responses to confirm their authenticity. You can do this by generating a hash on your end and comparing it with the one sent by Ozow.
+
+### Hash String Order
+
+The order in which you concatenate the variables to generate the hash string is crucial. Below is a PHP example showing how to generate this hash string based on the variables you've provided:
+
+```php
+$hashStr = $siteCode . "ZA" . "ZAR" . $amount . $transactionId . $bank_reference . $customer . $optional1 . $optional2 . $optional3 . $optional4 . $optional5 . $notifyUrl . $successUrl . $errorUrl . $cancelUrl . $isTest . $privateKey;
+```
+
+**Note**: Omit any variables that you did not provide on the FlutterOzow widget.
+
+By following these steps, you'll be able to effectively handle and validate Ozow responses in your merchant system.
+
+##### Handling response on your flutter app
+Refer to the `example` app
+
 ## Examples
 
 For more examples, see the `example` directory.
