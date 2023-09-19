@@ -13,9 +13,8 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
-  cloud_firestore: ^3.0.0
-  hooks_riverpod: ^1.0.0
   flutter_ozow: ^0.0.1
+  flutter_riverpod: ^2.4.0
 
 
 dev_dependencies:

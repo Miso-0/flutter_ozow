@@ -1,10 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_ozow/flutter_ozow.dart';
+import 'package:flutter_ozow_example/providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //import 'package:flutter_ozow/flutter_ozow.dart';
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -32,30 +33,19 @@ class PaymmentHandlerWidget extends ConsumerStatefulWidget {
       _PaymmentHandlerWidgetState();
 }
 
-final transactionProvider = StreamProvider.autoDispose
-    .family<Transaction, String>((ref, transactionId) {
-  return FirebaseFirestore.instance
-      .collection('transactions')
-      .doc(transactionId)
-      .snapshots()
-      .map((snapshot) => Transaction.fromMap(
-          snapshot.data() as Map<String, dynamic>, snapshot.id));
-});
-
 class _PaymmentHandlerWidgetState extends ConsumerState<PaymmentHandlerWidget> {
-  final notifyUrl = 'some_url_to_your_awesome_backend';
-  final id = 'some_unique_id';
+  final notifyUrl = 'misomenze.co.za';
+  final id = '10000';
   final amount = 100.0;
-  final siteCode = 'some_site_code';
-  final key = 'some_key';
+  final siteCode = 'MIS-MIS-010';
+  final key = '7af91f93bb2b4d728c8ef829508eb85c';
   final bankRef = 'ABC123';
   final isTest = true;
   final PaymentType type = PaymentType.order;
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<Transaction> transactionStatus =
-        ref.watch(transactionProvider(id));
+    final transactionStatus = ref.watch(transactionProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -67,37 +57,44 @@ class _PaymmentHandlerWidgetState extends ConsumerState<PaymmentHandlerWidget> {
           ),
         ),
       ),
+      body: Builder(builder: (context) {
+        ///while the transaction is processing, show the FlutterOzow widget
+        switch (transactionStatus.status) {
+          case TransactionStatus.processing:
+            return FlutterOzow(
+              transactionId: id,
+              privateKey: key,
+              siteCode: siteCode,
+              bankRef: bankRef,
+              amount: amount,
+              isTest: isTest,
+              successUrl: notifyUrl,
+              errorUrl: notifyUrl,
+              cancelUrl: notifyUrl,
+              notifyUrl: notifyUrl,
+              optional1: type.toString(),
+              optional2: type.toString(),
+              optional3: type.toString(),
+              optional4: type.toString(),
+              optional5: type.toString(),
+            );
+          case TransactionStatus.failed:
+            return const Center(child: Text('Transaction failed'));
+          case TransactionStatus.cancelled:
+            return const Center(child: Text('Transaction cancelled'));
+          default:
+            return const Center(child: Text('Transaction pending'));
+        }
+      })
 
       ///add the [FlutterOzow] widget to your body
-      body: transactionStatus.when(
-        data: (status) {
-          ///while the transaction is processing, show the FlutterOzow widget
-          switch (status.status) {
-            case TransactionStatus.processing:
-              return FlutterOzow(
-                transactionId: id,
-                privateKey: key,
-                siteCode: siteCode,
-                bankRef: bankRef,
-                amount: amount,
-                isTest: isTest,
-                successUrl: notifyUrl,
-                errorUrl: notifyUrl,
-                cancelUrl: notifyUrl,
-                notifyUrl: notifyUrl,
-                optional1: type.toString(),
-              );
-            case TransactionStatus.failed:
-              return const Center(child: Text('Transaction failed'));
-            case TransactionStatus.cancelled:
-              return const Center(child: Text('Transaction cancelled'));
-
-            default:
-              return const Center(child: Text('Transaction pending'));
-          }
+      ,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          ///update the transaction status
+          ref.read(transactionProvider.notifier).updateStatus();
         },
-        error: (error, stackTrace) => const Center(child: Text('Error')),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -159,6 +156,15 @@ class Transaction {
     return Transaction(
       id: id,
       status: transactionStatusFromString(data['status'].toString()),
+    );
+  }
+
+  Transaction copyWith({
+    TransactionStatus? status,
+  }) {
+    return Transaction(
+      id: id,
+      status: status ?? this.status,
     );
   }
 }
