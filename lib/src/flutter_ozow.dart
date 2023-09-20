@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -168,6 +167,8 @@ class _FlutterOzowState extends State<FlutterOzow> {
         getContents().uri,
         body: getContents().body,
       );
+
+    setState(() {});
   }
 
   @override
