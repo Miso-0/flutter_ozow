@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -8,7 +9,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 /// This widget utilizes [webview_flutter] to render a web page that assists
 /// with completing payments via the Ozow payment gateway.
 /// More information can be found at https://ozow.com.
-class FlutterOzow extends StatelessWidget {
+class FlutterOzow extends StatefulWidget {
   const FlutterOzow({
     super.key,
     required this.transactionId,
@@ -83,31 +84,38 @@ class FlutterOzow extends StatelessWidget {
   final void Function(int)? onProgress;
   final void Function(WebResourceError)? onWebResourceError;
 
+  @override
+  State<FlutterOzow> createState() => _FlutterOzowState();
+}
+
+class _FlutterOzowState extends State<FlutterOzow> {
+  WebViewController? controller;
+
   /// Constructs the URI and request body.
   ///
   /// This prepares the data needed for making the POST request.
   ({Uri uri, Uint8List body}) getContents() {
     //after hosting th php file on your server, replace the baseUrl with the url to the php file
     final String baseUrl =
-        'https://flutter-ozow.azurewebsites.net/?amount=${amount.toStringAsFixed(2)}&transactionId=$transactionId';
+        'https://flutter-ozow.azurewebsites.net/?amount=${widget.amount.toStringAsFixed(2)}&transactionId=${widget.transactionId}';
     // Prepare the body of the POST request.
     final body = {
-      'transactionId': transactionId.toString(),
-      'siteCode': siteCode,
-      'bankRef': bankRef,
-      'amount': amount.toStringAsFixed(2),
-      'privateKey': privateKey,
-      'isTest': isTest.toString(),
-      'notifyUrl': notifyUrl,
-      'successUrl': successUrl,
-      'errorUrl': errorUrl,
-      'cancelUrl': cancelUrl,
-      'customName': customName,
-      'optional1': optional1,
-      'optional2': optional2,
-      'optional3': optional3,
-      'optional4': optional4,
-      'optional5': optional5,
+      'transactionId': widget.transactionId.toString(),
+      'siteCode': widget.siteCode,
+      'bankRef': widget.bankRef,
+      'amount': widget.amount.toStringAsFixed(2),
+      'privateKey': widget.privateKey,
+      'isTest': widget.isTest.toString(),
+      'notifyUrl': widget.notifyUrl,
+      'successUrl': widget.successUrl,
+      'errorUrl': widget.errorUrl,
+      'cancelUrl': widget.cancelUrl,
+      'customName': widget.customName,
+      'optional1': widget.optional1,
+      'optional2': widget.optional2,
+      'optional3': widget.optional3,
+      'optional4': widget.optional4,
+      'optional5': widget.optional5,
     };
 
     // Convert the body to a byte list.
@@ -119,47 +127,63 @@ class FlutterOzow extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return WebViewWidget(
-      // Initialize the WebView and its settings.
-      controller: WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setBackgroundColor(const Color(0x00000000))
-        ..setNavigationDelegate(
-          NavigationDelegate(
-            onProgress: onProgress ??
-                (int progress) {
-                  if (kDebugMode) {
-                    print(
-                        'Flutter_ozow: WebView is loading (progress : $progress%)');
-                  }
-                },
-            onPageStarted: onPageStarted ??
-                (String url) {
-                  if (kDebugMode) {
-                    print('Flutter_ozow: Page started loading: $url');
-                  }
-                },
-            onPageFinished: onPageFinished ??
-                (String url) {
-                  if (kDebugMode) {
-                    print('Flutter_ozow: Page finished loading: $url');
-                  }
-                },
-            onWebResourceError: onWebResourceError ??
-                (WebResourceError error) {
-                  if (kDebugMode) {
-                    print(
-                        'Flutter_ozow: Error loading page: ${error.description}');
-                  }
-                },
-          ),
-        )
-        ..loadRequest(
-          method: LoadRequestMethod.post,
-          getContents().uri,
-          body: getContents().body,
+  void initState() {
+    super.initState();
+
+    controller ??= WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: widget.onProgress ??
+              (int progress) {
+                if (kDebugMode) {
+                  print(
+                      'Flutter_ozow: WebView is loading (progress : $progress%)');
+                }
+              },
+          onPageStarted: widget.onPageStarted ??
+              (String url) {
+                if (kDebugMode) {
+                  print('Flutter_ozow: Page started loading: $url');
+                }
+              },
+          onPageFinished: widget.onPageFinished ??
+              (String url) {
+                if (kDebugMode) {
+                  print('Flutter_ozow: Page finished loading: $url');
+                }
+              },
+          onWebResourceError: widget.onWebResourceError ??
+              (WebResourceError error) {
+                if (kDebugMode) {
+                  print(
+                      'Flutter_ozow: Error loading page: ${error.description}');
+                }
+              },
         ),
-    );
+      )
+      ..loadRequest(
+        method: LoadRequestMethod.post,
+        getContents().uri,
+        body: getContents().body,
+      );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (controller == null) {
+      return Container(
+        constraints: const BoxConstraints.expand(),
+        color: Colors.white,
+        child: Center(
+          child: Image.asset('assets/loading_gif.gif'),
+        ),
+      );
+    } else {
+      return WebViewWidget(
+        controller: controller!,
+      );
+    }
   }
 }

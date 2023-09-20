@@ -74,10 +74,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_ozow
-      sha256: "2091cc31155637068f9b54d369585e442e0d63efa1de5a86c4667de58f485efe"
+      sha256: d46af5f103241aa5a83aafce1435d4913dffde14b3b5e23311865a1ab95045c2
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.3"
+    version: "1.0.0"
   flutter_riverpod:
     dependency: "direct main"
     description:
