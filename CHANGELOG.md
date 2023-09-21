@@ -1,5 +1,5 @@
-## 1.0.1
+## 1.0.2
 
-* Minor bug fixes, and improvements.
+* Upgrade to flutter  3.13.5
 
 
