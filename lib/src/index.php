@@ -20,10 +20,10 @@
     }
 
     table,
-    td {
+    /* td {
         mso-table-lspace: 0pt;
         mso-table-rspace: 0pt;
-    }
+    } */
 
     img {
         -ms-interpolation-mode: bicubic;
@@ -78,7 +78,7 @@
         height: 60px !important;
         background: rgb(0, 222, 140);
         background: linear-gradient(155deg, rgba(0, 222, 140, 1) 26%, rgba(0, 193, 164, 1) 98%);
-        margin:  15px 15px 15px 15px;
+        margin: 15px 15px 15px 15px;
         border-radius: 20px;
         font: 1em sans-serif;
         font-weight: 100;
@@ -140,7 +140,7 @@
         width: 100%;
         height: 1px;
         background-color: rgba(217, 217, 217, 0.56);
-        margin: 10px  10px 10px 10px;
+        margin: 10px 10px 10px 10px;
         padding: 0px 0px 0px 0px;
     }
 </style>
@@ -156,25 +156,22 @@
             <table border="0" cellpadding="15" cellspacing="0" width="100%">
                 <tr>
                     <td align="center">
-                        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%"
-                            style="max-width:600px;">
+                        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
                             <tr>
                                 <td align="center" style="padding: 35px 35px 20px 35px;">
-                                    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%"
-                                        style="max-width:600px;">
+                                    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
                                         <tr>
                                             <td align="start">
-                                                <p class="ref">Ref: <?=$_GET['transactionId'];?></p>
+                                                <p class="ref">Ref: <?= $_GET['transactionId']; ?></p>
                                             </td>
                                         </tr>
 
                                         <tr>
-                                            <td align="start"
-                                                style="font-family: Open Sans, Helvetica, Arial, sans-serif;
+                                            <td align="start" style="font-family: Open Sans, Helvetica, Arial, sans-serif;
                                                 font-size: 15px; font-weight: 400; line-height: 24px; padding-top: 0px;">
                                                 <h2 style="font-size: 30px; font-weight: 600;
                                                      line-height: 36px; color: #333333;
-                                                      margin: 0;">You are about to pay R<?=$_GET['amount'];?> with Ozow.
+                                                      margin: 0;">You are about to pay R<?= $_GET['amount']; ?> with Ozow.
                                                 </h2>
                                             </td>
                                         </tr>
@@ -192,122 +189,116 @@
             </table>
         </div>
 
-<table>
-<td>
-<tr>
-<?php
-// Get the raw POST data
-$requestBody = file_get_contents('php://input');
+        <table>
+            <td>
+                <tr>
+                    <?php
+                    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                        // Extract the parameters from the query string
+                        $transactionId = $_GET['transactionId'] ?? null;
+                        $siteCode = $_GET['siteCode'] ?? null;
+                        $privateKey = $_GET['privateKey'] ?? null;
+                        $bankRef = $_GET['bankRef'] ?? null;
+                        $amount = $_GET['amount'] ?? null;
+                        $isTest = $_GET['isTest'] ?? null;
+                        $notifyUrl = $_GET['notifyUrl'] ?? null;
+                        $successUrl = $_GET['successUrl'] ?? null;
+                        $errorUrl = $_GET['errorUrl'] ?? null;
+                        $cancelUrl = $_GET['cancelUrl'] ?? null;
+                        $customer = $_GET['customer'] ?? null;
+                        $optional1 = $_GET['optional1'] ?? null;
+                        $optional2 = $_GET['optional2'] ?? null;
+                        $optional3 = $_GET['optional3'] ?? null;
+                        $optional4 = $_GET['optional4'] ?? null;
+                        $optional5 = $_GET['optional5'] ?? null;
 
-// Decode the JSON into an associative array
-$data = json_decode($requestBody, true);
+                        $hashStr = $siteCode . "ZA" . "ZAR" . $amount . $transactionId . $bankRef;
 
-if ($data != null) {
+                        //add the optional custom identifier if it is not null
+                        if ($customer !== null) {
+                            $hashStr .= $customer;
+                        }
 
-// Extract the parameters from the decoded JSON
-    $transactionId = $data['transactionId'];
-    $siteCode = $data['siteCode'];
-    $privateKey = $data['privateKey'];
-    $bankRef = $data['bankRef'];
-    $amount = $data['amount'];
-    $isTest = $data['isTest'];
-    $notifyUrl = $data['notifyUrl'];
-    $successUrl = $data['successUrl'];
-    $errorUrl = $data['errorUrl'];
-    $cancelUrl = $data['cancelUrl'];
-    $customer = $data['customer'];
-    $optional1 = $data['optional1'];
-    $optional2 = $data['optional2'];
-    $optional3 = $data['optional3'];
-    $optional4 = $data['optional4'];
-    $optional5 = $data['optional5'];
+                        // Add optional fields if they are not null
+                        $optionalFields = [$optional1, $optional2, $optional3, $optional4, $optional5];
+                        foreach ($optionalFields as $optionalField) {
+                            if ($optionalField !== null) {
+                                $hashStr .= $optionalField;
+                            }
+                        }
 
-    $hashStr = $siteCode . "ZA" . "ZAR" . $amount . $transactionId . $bankRef;
+                        // Add URL fields if they are not null
+                        $urlFields = [$notifyUrl, $successUrl, $errorUrl, $cancelUrl];
+                        foreach ($urlFields as $urlField) {
+                            if ($urlField !== null) {
+                                $hashStr .= $urlField;
+                            }
+                        }
 
-    //add the optional custom identifier if it is not null
-    if ($customer !== null) {
-        $hashStr .= $customer;
-    }
+                        // Add isTest and privateKey at the end
+                        $hashStr .= $isTest . $privateKey;
 
-// Add optional fields if they are not null
-    $optionalFields = [$optional1, $optional2, $optional3, $optional4, $optional5];
-    foreach ($optionalFields as $optionalField) {
-        if ($optionalField !== null) {
-            $hashStr .= $optionalField;
-        }
-    }
+                        // Convert the above concatenated string to lowercase
+                        $hashStr = strtolower($hashStr);
+                        // Generate a SHA512 hash of the lowercase concatenated string
+                        $hash = hash('SHA512', $hashStr);
 
-// Add URL fields if they are not null
-    $urlFields = [$notifyUrl, $successUrl, $errorUrl, $cancelUrl];
-    foreach ($urlFields as $urlField) {
-        if ($urlField !== null) {
-            $hashStr .= $urlField;
-        }
-    }
+                    ?>
+                        <form action="https://pay.ozow.com" method="POST">
+                            <input type="hidden" name="TransactionReference" value="<?= $transactionId; ?>">
+                            <input type="hidden" name="SiteCode" value="<?= $siteCode; ?>">
+                            <input type="hidden" name="CountryCode" value="ZA">
+                            <input type="hidden" name="CurrencyCode" value="ZAR">
+                            <input type="hidden" name="Amount" value="<?= $amount; ?>">
+                            <input type="hidden" name="BankReference" value="<?= $bankRef; ?>">
+                            <input type="hidden" class="form-control" name="HashCheck" value="<?= $hash; ?>">
+                            <input type="hidden" name="IsTest" value="<?= $isTest; ?>">
 
-// Add isTest and privateKey at the end
-    $hashStr .= $isTest . $privateKey;
+                            <!-- Include optional fields if they are not null -->
+                            <?php
+                            // Add optional fields if they are not null
+                            $optionals = [$optional1, $optional2, $optional3, $optional4, $optional5];
+                            $i = 1; // Initialize index
+                            foreach ($optionals as $optional) {
+                                if ($optional !== null) {
+                                    echo '<input type="hidden" name="Optional' . $i . '" value="' . $optional . '">';
+                                    $i++; // Increment index
+                                }
+                            }
 
-// Convert the above concatenated string to lowercase
-    $hashStr = strtolower($hashStr);
-// Generate a SHA512 hash of the lowercase concatenated string
-    $hash = hash('SHA512', $hashStr);
+                            // Include NotifyUrl if not null
+                            if ($notifyUrl !== null) {
+                                echo '<input type="hidden" name="NotifyUrl" value="' . $notifyUrl . '">';
+                            }
 
-    ?>
-    <form action="https://pay.ozow.com" method="POST">
-    <input type="hidden" name="TransactionReference" value="<?=$transactionId;?>">
-    <input type="hidden" name="SiteCode" value="<?=$siteCode;?>">
-    <input type="hidden" name="CountryCode" value="ZA">
-    <input type="hidden" name="CurrencyCode" value="ZAR">
-    <input type="hidden" name="Amount" value="<?=$amount;?>">
-    <input type="hidden" name="BankReference" value="<?=$bankRef;?>">
-    <input type="hidden" class="form-control" name="HashCheck" value="<?=$hash;?>">
-    <input type="hidden" name="IsTest" value="<?=$isTest;?>">
+                            // Include SuccessUrl if not null
+                            if ($successUrl !== null) {
+                                echo '<input type="hidden" name="SuccessUrl" value="' . $successUrl . '">';
+                            }
 
-    <!-- Include optional fields if they are not null -->
-    <?php
-// Add optional fields if they are not null
-    $optionals = [$optional1, $optional2, $optional3, $optional4, $optional5];
-    $i = 1; // Initialize index
-    foreach ($optionals as $optional) {
-        if ($optional !== null) {
-            echo '<input type="hidden" name="Optional' . $i . '" value="' . $optional . '">';
-            $i++; // Increment index
-        }
-    }
+                            // Include ErrorUrl if not null
+                            if ($errorUrl !== null) {
+                                echo '<input type="hidden" name="ErrorUrl" value="' . $errorUrl . '">';
+                            }
 
-    // Include NotifyUrl if not null
-    if ($notifyUrl !== null) {
-        echo '<input type="hidden" name="NotifyUrl" value="' . $notifyUrl . '">';
-    }
+                            // Include CancelUrl if not null
+                            if ($cancelUrl !== null) {
+                                echo '<input type="hidden" name="CancelUrl" value="' . $cancelUrl . '">';
+                            }
 
-    // Include SuccessUrl if not null
-    if ($successUrl !== null) {
-        echo '<input type="hidden" name="SuccessUrl" value="' . $successUrl . '">';
-    }
+                            // Include CustomName if not null
+                            if ($customer !== null) {
+                                echo '<input type="hidden" name="Customer" value="' . $customer . '">';
+                            }
 
-    // Include ErrorUrl if not null
-    if ($errorUrl !== null) {
-        echo '<input type="hidden" name="ErrorUrl" value="' . $errorUrl . '">';
-    }
-
-    // Include CancelUrl if not null
-    if ($cancelUrl !== null) {
-        echo '<input type="hidden" name="CancelUrl" value="' . $cancelUrl . '">';
-    }
-
-    // Include CustomName if not null
-    if ($customer !== null) {
-        echo '<input type="hidden" name="Customer" value="' . $customer . '">';
-    }
-
-    ?>
-    <input type="submit" class="btn" value="Pay now">
-    </form>
-    <?php }?>
-    </tr>
-    </td>
-    </table>
+                            ?>
+                            <input type="submit" class="btn" value="Pay now">
+                        </form>
+                    <?php } ?>
+                </tr>
+            </td>
+        </table>
     </div>
 </body>
+
 </html>

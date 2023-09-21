@@ -1,4 +1,4 @@
-import 'dart:convert';
+// import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -88,103 +88,128 @@ class FlutterOzow extends StatefulWidget {
 }
 
 class _FlutterOzowState extends State<FlutterOzow> {
-  WebViewController? controller;
+  late final WebViewController controller;
 
-  /// Constructs the URI and request body.
-  ///
-  /// This prepares the data needed for making the POST request.
-  ({Uri uri, Uint8List body}) getContents() {
-    //after hosting th php file on your server, replace the baseUrl with the url to the php file
-    final String baseUrl =
-        'https://flutter-ozow.azurewebsites.net/?amount=${widget.amount.toStringAsFixed(2)}&transactionId=${widget.transactionId}';
-    // Prepare the body of the POST request.
-    final body = {
-      'transactionId': widget.transactionId.toString(),
-      'siteCode': widget.siteCode,
-      'bankRef': widget.bankRef,
-      'amount': widget.amount.toStringAsFixed(2),
-      'privateKey': widget.privateKey,
-      'isTest': widget.isTest.toString(),
-      'notifyUrl': widget.notifyUrl,
-      'successUrl': widget.successUrl,
-      'errorUrl': widget.errorUrl,
-      'cancelUrl': widget.cancelUrl,
-      'customName': widget.customName,
-      'optional1': widget.optional1,
-      'optional2': widget.optional2,
-      'optional3': widget.optional3,
-      'optional4': widget.optional4,
-      'optional5': widget.optional5,
-    };
+  // /// Constructs the URI and request body.
+  // ///
+  // /// This prepares the data needed for making the POST request.
+  // ({Uri uri, Uint8List body}) getContents() {
+  //   //after hosting th php file on your server, replace the baseUrl with the url to the php file
+  //   final String baseUrl =
+  //       'https://flutter-ozow.azurewebsites.net/?amount=${widget.amount.toStringAsFixed(2)}&transactionId=${widget.transactionId}';
+  //   // Prepare the body of the POST request.
+  //   final body = {
+  //     'transactionId': widget.transactionId.toString(),
+  //     'siteCode': widget.siteCode,
+  //     'bankRef': widget.bankRef,
+  //     'amount': widget.amount.toStringAsFixed(2),
+  //     'privateKey': widget.privateKey,
+  //     'isTest': widget.isTest.toString(),
+  //     'notifyUrl': widget.notifyUrl,
+  //     'successUrl': widget.successUrl,
+  //     'errorUrl': widget.errorUrl,
+  //     'cancelUrl': widget.cancelUrl,
+  //     'customName': widget.customName,
+  //     'optional1': widget.optional1,
+  //     'optional2': widget.optional2,
+  //     'optional3': widget.optional3,
+  //     'optional4': widget.optional4,
+  //     'optional5': widget.optional5,
+  //   };
 
-    // Convert the body to a byte list.
-    final bodyList = Uint8List.fromList(utf8.encode(json.encode(body)));
-    // Parse the URL to a URI.
-    final uri = Uri.parse(baseUrl);
+  //   // Convert the body to a byte list.
+  //   final bodyList = Uint8List.fromList(utf8.encode(json.encode(body)));
+  //   // Parse the URL to a URI.
+  //   final uri = Uri.parse(baseUrl);
 
-    return (uri: uri, body: bodyList);
+  //   return (uri: uri, body: bodyList);
+  // }
+
+  String buildUrl() {
+    // Initialize the Map for query parameters
+    Map<String, String> queryParams = {};
+
+    // Required parameters
+    queryParams['transactionId'] = widget.transactionId.toString();
+    queryParams['siteCode'] = widget.siteCode;
+    queryParams['bankRef'] = widget.bankRef;
+    queryParams['amount'] = widget.amount.toStringAsFixed(2);
+    queryParams['privateKey'] = widget.privateKey;
+    queryParams['isTest'] = widget.isTest.toString();
+
+    // Optional parameters
+    if (widget.notifyUrl != null) queryParams['notifyUrl'] = widget.notifyUrl!;
+    if (widget.successUrl != null) {
+      queryParams['successUrl'] = widget.successUrl!;
+    }
+    if (widget.errorUrl != null) queryParams['errorUrl'] = widget.errorUrl!;
+    if (widget.cancelUrl != null) queryParams['cancelUrl'] = widget.cancelUrl!;
+    if (widget.customName != null) {
+      queryParams['customName'] = widget.customName!;
+    }
+    if (widget.optional1 != null) queryParams['optional1'] = widget.optional1!;
+    if (widget.optional2 != null) queryParams['optional2'] = widget.optional2!;
+    if (widget.optional3 != null) queryParams['optional3'] = widget.optional3!;
+    if (widget.optional4 != null) queryParams['optional4'] = widget.optional4!;
+    if (widget.optional5 != null) queryParams['optional5'] = widget.optional5!;
+
+    // Convert the Map to query string
+    String queryString = Uri(queryParameters: queryParams).query;
+
+    // Build the final URL
+    final baseUrl = 'https://flutter-ozow.azurewebsites.net/?$queryString';
+
+    return baseUrl;
   }
 
   @override
   void initState() {
     super.initState();
-    setState(() {
-      controller ??= WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setBackgroundColor(const Color(0x00000000))
-        ..setNavigationDelegate(
-          NavigationDelegate(
-            onProgress: widget.onProgress ??
-                (int progress) {
-                  if (kDebugMode) {
-                    print(
-                        'Flutter_ozow: WebView is loading (progress : $progress%)');
-                  }
-                },
-            onPageStarted: widget.onPageStarted ??
-                (String url) {
-                  if (kDebugMode) {
-                    print('Flutter_ozow: Page started loading: $url');
-                  }
-                },
-            onPageFinished: widget.onPageFinished ??
-                (String url) {
-                  if (kDebugMode) {
-                    print('Flutter_ozow: Page finished loading: $url');
-                  }
-                },
-            onWebResourceError: widget.onWebResourceError ??
-                (WebResourceError error) {
-                  if (kDebugMode) {
-                    print(
-                        'Flutter_ozow: Error loading page: ${error.description}');
-                  }
-                },
-          ),
-        )
-        ..loadRequest(
-          method: LoadRequestMethod.post,
-          getContents().uri,
-          body: getContents().body,
-        );
-    });
+    final uri = Uri.parse(buildUrl());
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: widget.onProgress ??
+              (int progress) {
+                if (kDebugMode) {
+                  print(
+                      'Flutter_ozow: WebView is loading (progress : $progress%)');
+                }
+              },
+          onPageStarted: widget.onPageStarted ??
+              (String url) {
+                if (kDebugMode) {
+                  print('Flutter_ozow: Page started loading: $url');
+                }
+              },
+          onPageFinished: widget.onPageFinished ??
+              (String url) {
+                if (kDebugMode) {
+                  print('Flutter_ozow: Page finished loading: $url');
+                }
+              },
+          onWebResourceError: widget.onWebResourceError ??
+              (WebResourceError error) {
+                if (kDebugMode) {
+                  print(
+                      'Flutter_ozow: Error loading page: ${error.description}');
+                }
+              },
+        ),
+      )
+      ..loadRequest(
+        uri,
+      );
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    if (controller == null) {
-      return Container(
-        constraints: const BoxConstraints.expand(),
-        color: Colors.white,
-        child: Center(
-          child: Image.asset('assets/loading_gif.gif'),
-        ),
-      );
-    } else {
-
-      return WebViewWidget(
-        controller: controller!,
-      );
-    }
+    ///
+    return WebViewWidget(
+      controller: controller,
+    );
   }
 }
