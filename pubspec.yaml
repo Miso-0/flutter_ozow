@@ -18,6 +18,4 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^2.0.0
 
-assets:
-  - assets/
 
