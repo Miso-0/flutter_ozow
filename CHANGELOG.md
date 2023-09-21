@@ -1,5 +1,5 @@
-## 1.0.0
+## 1.0.1
 
-* Initial beta release
+* Minor bug fixes, and improvements.
 
 
