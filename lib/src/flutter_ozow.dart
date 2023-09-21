@@ -207,9 +207,111 @@ class _FlutterOzowState extends State<FlutterOzow> {
 
   @override
   Widget build(BuildContext context) {
-    ///
-    return WebViewWidget(
-      controller: controller,
-    );
+    if (isValidVariables()) {
+      return WebViewWidget(
+        controller: controller,
+      );
+    } else {
+      return const Center(
+        child: Text(
+          'Invalid variables, ensure that all your variables do not '
+          'contain the characters \'&\' or \'=\'.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 15.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
+  }
+
+  // This function checks if the given variables contain invalid characters ('&' or '=')
+  // and returns true if all variables are valid, otherwise returns false.
+  bool isValidVariables() {
+    if (widget.transactionId.toString().contains('&') ||
+        widget.transactionId.toString().contains('=')) {
+      return false;
+    }
+    if (widget.siteCode.contains('&') || widget.siteCode.contains('=')) {
+      return false;
+    }
+
+    if (widget.bankRef.contains('&') || widget.bankRef.contains('=')) {
+      return false;
+    }
+
+    if (widget.amount.toString().contains('&') ||
+        widget.amount.toString().contains('=')) {
+      return false;
+    }
+
+    if (widget.privateKey.contains('&') || widget.privateKey.contains('=')) {
+      return false;
+    }
+
+    if (widget.notifyUrl != null) {
+      if (widget.notifyUrl!.contains('&') || widget.notifyUrl!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.successUrl != null) {
+      if (widget.successUrl!.contains('&') ||
+          widget.successUrl!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.errorUrl != null) {
+      if (widget.errorUrl!.contains('&') || widget.errorUrl!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.cancelUrl != null) {
+      if (widget.cancelUrl!.contains('&') || widget.cancelUrl!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.customName != null) {
+      if (widget.customName!.contains('&') ||
+          widget.customName!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.optional1 != null) {
+      if (widget.optional1!.contains('&') || widget.optional1!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.optional2 != null) {
+      if (widget.optional2!.contains('&') || widget.optional2!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.optional3 != null) {
+      if (widget.optional3!.contains('&') || widget.optional3!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.optional4 != null) {
+      if (widget.optional4!.contains('&') || widget.optional4!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.optional5 != null) {
+      if (widget.optional5!.contains('&') || widget.optional5!.contains('=')) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
