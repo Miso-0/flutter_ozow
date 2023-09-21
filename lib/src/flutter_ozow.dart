@@ -88,42 +88,8 @@ class FlutterOzow extends StatefulWidget {
 }
 
 class _FlutterOzowState extends State<FlutterOzow> {
+  /// The controller for the WebView.
   late final WebViewController controller;
-
-  // /// Constructs the URI and request body.
-  // ///
-  // /// This prepares the data needed for making the POST request.
-  // ({Uri uri, Uint8List body}) getContents() {
-  //   //after hosting th php file on your server, replace the baseUrl with the url to the php file
-  //   final String baseUrl =
-  //       'https://flutter-ozow.azurewebsites.net/?amount=${widget.amount.toStringAsFixed(2)}&transactionId=${widget.transactionId}';
-  //   // Prepare the body of the POST request.
-  //   final body = {
-  //     'transactionId': widget.transactionId.toString(),
-  //     'siteCode': widget.siteCode,
-  //     'bankRef': widget.bankRef,
-  //     'amount': widget.amount.toStringAsFixed(2),
-  //     'privateKey': widget.privateKey,
-  //     'isTest': widget.isTest.toString(),
-  //     'notifyUrl': widget.notifyUrl,
-  //     'successUrl': widget.successUrl,
-  //     'errorUrl': widget.errorUrl,
-  //     'cancelUrl': widget.cancelUrl,
-  //     'customName': widget.customName,
-  //     'optional1': widget.optional1,
-  //     'optional2': widget.optional2,
-  //     'optional3': widget.optional3,
-  //     'optional4': widget.optional4,
-  //     'optional5': widget.optional5,
-  //   };
-
-  //   // Convert the body to a byte list.
-  //   final bodyList = Uint8List.fromList(utf8.encode(json.encode(body)));
-  //   // Parse the URL to a URI.
-  //   final uri = Uri.parse(baseUrl);
-
-  //   return (uri: uri, body: bodyList);
-  // }
 
   String buildUrl() {
     // Initialize the Map for query parameters
