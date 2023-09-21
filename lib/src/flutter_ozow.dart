@@ -131,44 +131,46 @@ class _FlutterOzowState extends State<FlutterOzow> {
   @override
   void initState() {
     super.initState();
-    final uri = Uri.parse(buildUrl());
-    controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: widget.onProgress ??
-              (int progress) {
-                if (kDebugMode) {
-                  print(
-                      'Flutter_ozow: WebView is loading (progress : $progress%)');
-                }
-              },
-          onPageStarted: widget.onPageStarted ??
-              (String url) {
-                if (kDebugMode) {
-                  print('Flutter_ozow: Page started loading: $url');
-                }
-              },
-          onPageFinished: widget.onPageFinished ??
-              (String url) {
-                if (kDebugMode) {
-                  print('Flutter_ozow: Page finished loading: $url');
-                }
-              },
-          onWebResourceError: widget.onWebResourceError ??
-              (WebResourceError error) {
-                if (kDebugMode) {
-                  print(
-                      'Flutter_ozow: Error loading page: ${error.description}');
-                }
-              },
-        ),
-      )
-      ..loadRequest(
-        uri,
-      );
-    setState(() {});
+    if (isValidVariables()) {
+      final uri = Uri.parse(buildUrl());
+      controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setBackgroundColor(const Color(0x00000000))
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onProgress: widget.onProgress ??
+                (int progress) {
+                  if (kDebugMode) {
+                    print(
+                        'Flutter_ozow: WebView is loading (progress : $progress%)');
+                  }
+                },
+            onPageStarted: widget.onPageStarted ??
+                (String url) {
+                  if (kDebugMode) {
+                    print('Flutter_ozow: Page started loading: $url');
+                  }
+                },
+            onPageFinished: widget.onPageFinished ??
+                (String url) {
+                  if (kDebugMode) {
+                    print('Flutter_ozow: Page finished loading: $url');
+                  }
+                },
+            onWebResourceError: widget.onWebResourceError ??
+                (WebResourceError error) {
+                  if (kDebugMode) {
+                    print(
+                        'Flutter_ozow: Error loading page: ${error.description}');
+                  }
+                },
+          ),
+        )
+        ..loadRequest(
+          uri,
+        );
+      setState(() {});
+    }
   }
 
   @override
