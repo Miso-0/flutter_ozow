@@ -1,7 +1,6 @@
-// import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 /// The `FlutterOzow` widget integrates Ozow payment gateway through a WebView.
 ///
@@ -89,7 +88,7 @@ class FlutterOzow extends StatefulWidget {
 
 class _FlutterOzowState extends State<FlutterOzow> {
   /// The controller for the WebView.
-  late final WebViewController controller;
+  late final PlatformWebViewController controller;
 
   String buildUrl() {
     // Initialize the Map for query parameters
@@ -133,43 +132,58 @@ class _FlutterOzowState extends State<FlutterOzow> {
     super.initState();
     if (isValidVariables()) {
       final uri = Uri.parse(buildUrl());
-      controller = WebViewController()
+      controller = PlatformWebViewController(
+        AndroidWebViewControllerCreationParams(),
+      )
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setBackgroundColor(const Color(0x00000000))
-        // ..setNavigationDelegate(
-        //   NavigationDelegate(
-        //     onProgress: widget.onProgress ??
-        //         (int progress) {
-        //           if (kDebugMode) {
-        //             print(
-        //                 'Flutter_ozow: WebView is loading (progress : $progress%)');
-        //           }
-        //         },
-        //     onPageStarted: widget.onPageStarted ??
-        //         (String url) {
-        //           if (kDebugMode) {
-        //             print('Flutter_ozow: Page started loading: $url');
-        //           }
-        //         },
-        //     onPageFinished: widget.onPageFinished ??
-        //         (String url) {
-        //           if (kDebugMode) {
-        //             print('Flutter_ozow: Page finished loading: $url');
-        //           }
-        //         },
-        //     onWebResourceError: widget.onWebResourceError ??
-        //         (WebResourceError error) {
-        //           if (kDebugMode) {
-        //             print(
-        //                 'Flutter_ozow: Error loading page: ${error.description}');
-        //           }
-        //         },
-        //   ),
-
-        // )
-        ..loadRequest(
-          uri,
-        );
+        ..setBackgroundColor(const Color(0x80000000))
+        ..setPlatformNavigationDelegate(
+          PlatformNavigationDelegate(
+            const PlatformNavigationDelegateCreationParams(),
+          )
+            ..setOnProgress((int progress) {
+              debugPrint('WebView is loading (progress : $progress%)');
+            })
+            ..setOnPageStarted((String url) {
+              debugPrint('Page started loading: $url');
+            })
+            ..setOnPageFinished((String url) {
+              debugPrint('Page finished loading: $url');
+            })
+            ..setOnWebResourceError((WebResourceError error) {
+              debugPrint('Page error: ${error.description}');
+            })
+            ..setOnNavigationRequest((NavigationRequest request) {
+              if (request.url.contains('pub.dev')) {
+                debugPrint('blocking navigation to ${request.url}');
+                return NavigationDecision.prevent;
+              }
+              debugPrint('allowing navigation to ${request.url}');
+              return NavigationDecision.navigate;
+            })
+            ..setOnUrlChange((UrlChange change) {
+              debugPrint('url change to ${change.url}');
+            }),
+        )
+        ..addJavaScriptChannel(JavaScriptChannelParams(
+          name: 'Toaster',
+          onMessageReceived: (JavaScriptMessage message) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message.message)),
+            );
+          },
+        ))
+        ..setOnPlatformPermissionRequest(
+          (PlatformWebViewPermissionRequest request) {
+            debugPrint(
+              'requesting permissions for ${request.types.map((WebViewPermissionResourceType type) => type.name)}',
+            );
+            request.grant();
+          },
+        )
+        ..loadRequest(LoadRequestParams(
+          uri: uri,
+        ));
       setState(() {});
     }
   }
@@ -177,9 +191,9 @@ class _FlutterOzowState extends State<FlutterOzow> {
   @override
   Widget build(BuildContext context) {
     if (isValidVariables()) {
-      return WebViewWidget(
-        controller: controller,
-      );
+      return PlatformWebViewWidget(
+        PlatformWebViewWidgetCreationParams(controller: controller),
+      ).build(context);
     } else {
       return const Center(
         child: Text(

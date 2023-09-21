@@ -11,7 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  webview_flutter: ^4.2.4
+  webview_flutter_android: ^3.10.1
+
 
 dev_dependencies:
   flutter_test:
