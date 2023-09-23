@@ -193,24 +193,30 @@
             <td>
                 <tr>
                     <?php
-                    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                        // Extract the parameters from the query string
-                        $transactionId = $_GET['transactionId'] ?? null;
-                        $siteCode = $_GET['siteCode'] ?? null;
-                        $privateKey = $_GET['privateKey'] ?? null;
-                        $bankRef = $_GET['bankRef'] ?? null;
-                        $amount = $_GET['amount'] ?? null;
-                        $isTest = $_GET['isTest'] ?? null;
-                        $notifyUrl = $_GET['notifyUrl'] ?? null;
-                        $successUrl = $_GET['successUrl'] ?? null;
-                        $errorUrl = $_GET['errorUrl'] ?? null;
-                        $cancelUrl = $_GET['cancelUrl'] ?? null;
-                        $customer = $_GET['customer'] ?? null;
-                        $optional1 = $_GET['optional1'] ?? null;
-                        $optional2 = $_GET['optional2'] ?? null;
-                        $optional3 = $_GET['optional3'] ?? null;
-                        $optional4 = $_GET['optional4'] ?? null;
-                        $optional5 = $_GET['optional5'] ?? null;
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        // Get raw POST data
+                        $rawData = file_get_contents("php://input");
+
+                        // Decode JSON data into associative array
+                        $data = json_decode($rawData, true);
+
+                        // Extract parameters from the parsed data
+                        $transactionId = $data['transactionId'] ?? null;
+                        $siteCode = $data['siteCode'] ?? null;
+                        $privateKey = $data['privateKey'] ?? null;
+                        $bankRef = $data['bankRef'] ?? null;
+                        $amount = $data['amount'] ?? null;
+                        $isTest = $data['isTest'] ?? null;
+                        $notifyUrl = $data['notifyUrl'] ?? null;
+                        $successUrl = $data['successUrl'] ?? null;
+                        $errorUrl = $data['errorUrl'] ?? null;
+                        $cancelUrl = $data['cancelUrl'] ?? null;
+                        $customer = $data['customer'] ?? null;
+                        $optional1 = $data['optional1'] ?? null;
+                        $optional2 = $data['optional2'] ?? null;
+                        $optional3 = $data['optional3'] ?? null;
+                        $optional4 = $data['optional4'] ?? null;
+                        $optional5 = $data['optional5'] ?? null;
 
                         $hashStr = $siteCode . "ZA" . "ZAR" . $amount . $transactionId . $bankRef;
 
