@@ -1,5 +1,5 @@
-## 1.0.2
+## 1.0.3
 
-* Upgrade to flutter  3.13.5
+* Support for flutter  3.13.5
 
 
