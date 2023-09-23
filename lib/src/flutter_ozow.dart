@@ -33,7 +33,13 @@ class FlutterOzow extends StatefulWidget {
     this.onPageFinished,
     this.onProgress,
     this.onWebResourceError,
+    this.width,
+    this.height,
   });
+
+  ///
+  final double? width;
+  final double? height;
 
   /// Unique transaction ID or order number generated from your backend.
   ///
@@ -180,8 +186,12 @@ class _FlutterOzowState extends State<FlutterOzow> {
 
   @override
   Widget build(BuildContext context) {
-    return WebViewWidget(
-      controller: controller,
+    return SizedBox(
+      width: widget.width ?? MediaQuery.sizeOf(context).width,
+      height: widget.height ?? MediaQuery.sizeOf(context).height,
+      child: WebViewWidget(
+        controller: controller,
+      ),
     );
   }
 }
