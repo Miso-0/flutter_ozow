@@ -43,6 +43,10 @@ class _PaymmentHandlerWidgetState extends ConsumerState<PaymmentHandlerWidget> {
   final isTest = true;
   final PaymentType type = PaymentType.order;
 
+  bool _isLoaded = false;
+
+  int progress = 0;
+
   @override
   Widget build(BuildContext context) {
     final transactionStatus = ref.watch(transactionProvider);

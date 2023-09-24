@@ -31,7 +31,6 @@ class FlutterOzow extends StatefulWidget {
     this.optional5,
     this.onPageStarted,
     this.onPageFinished,
-    this.onProgress,
     this.onWebResourceError,
     this.width,
     this.height,
@@ -88,7 +87,7 @@ class FlutterOzow extends StatefulWidget {
   ///using the following callbacks.
   final void Function(String)? onPageStarted;
   final void Function(String)? onPageFinished;
-  final void Function(int)? onProgress;
+
   final void Function(WebResourceError)? onWebResourceError;
 
   @override
@@ -148,13 +147,11 @@ class _FlutterOzowState extends State<FlutterOzow> {
       ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onProgress: widget.onProgress ??
-              (int progress) {
-                if (kDebugMode) {
-                  print(
-                      'Flutter_ozow: WebView is loading (progress : $progress%)');
-                }
-              },
+          onProgress: (int progress) {
+            setState(() {
+              this.progress = progress;
+            });
+          },
           onPageStarted: widget.onPageStarted ??
               (String url) {
                 if (kDebugMode) {
@@ -184,13 +181,26 @@ class _FlutterOzowState extends State<FlutterOzow> {
     setState(() {});
   }
 
+  int progress = 0;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.width ?? MediaQuery.sizeOf(context).width,
       height: widget.height ?? MediaQuery.sizeOf(context).height,
-      child: WebViewWidget(
-        controller: controller,
+      child: Column(
+        children: [
+          LinearProgressIndicator(
+            value: progress / 100,
+            backgroundColor: Colors.transparent,
+            color: const Color.fromRGBO(0, 222, 140, 1),
+          ),
+          Expanded(
+            child: WebViewWidget(
+              controller: controller,
+            ),
+          ),
+        ],
       ),
     );
   }
