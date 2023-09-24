@@ -1,5 +1,5 @@
-## 1.0.3
+## 1.0.4
 
-* Support for flutter  3.13.5
+* Support for flutter  3.13.5 and added a loading indicator
 
 

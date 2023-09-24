@@ -87,7 +87,6 @@ class FlutterOzow extends StatefulWidget {
   ///using the following callbacks.
   final void Function(String)? onPageStarted;
   final void Function(String)? onPageFinished;
-
   final void Function(WebResourceError)? onWebResourceError;
 
   @override
