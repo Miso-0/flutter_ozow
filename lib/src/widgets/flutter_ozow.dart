@@ -1,5 +1,5 @@
 // import 'dart:convert';
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, unused_element
 
 import 'dart:convert';
 
@@ -32,7 +32,6 @@ class FlutterOzow extends StatefulWidget {
     this.successUrl,
     this.errorUrl,
     this.cancelUrl,
-    this.customer,
     this.optional1,
     this.optional2,
     this.optional3,
@@ -70,9 +69,6 @@ class FlutterOzow extends StatefulWidget {
 
   /// The amount to be paid for the transaction.
   final double amount;
-
-  ///The customer’s name or identifier.
-  final String? customer;
 
   /// Flag to indicate whether this is a test transaction.
   final bool isTest;
@@ -112,7 +108,7 @@ class FlutterOzow extends StatefulWidget {
   final String? optional5;
 
   ///A callback function that
-  final void Function(OzowStatus)? onComplete;
+  final void Function(OzowTransaction?, OzowStatus)? onComplete;
 
   @override
   State<FlutterOzow> createState() => _FlutterOzowState();
@@ -147,22 +143,27 @@ class _FlutterOzowState extends State<FlutterOzow> {
 
       ///verify the status of the transaction
       setLoading(true);
-      final verifiedStatus = await _decodeStatus(status);
+      final res = await _decodeStatus(status);
       setLoading(false);
 
       ///update the status of the transaction
       ///to update the UI
-      setStatus(verifiedStatus);
+      setStatus(res.status);
 
       ///if the onComplete callback is not null, call it
       ///with the status of the transaction
-      if (widget.onComplete != null) widget.onComplete!(verifiedStatus);
+      if (widget.onComplete != null) {
+        widget.onComplete!(res.transaction, res.status);
+      }
     }
   }
 
-  Future<OzowStatus> _decodeStatus(String status) async {
+  Future<({OzowStatus status, OzowTransaction? transaction})> _decodeStatus(
+      String status) async {
     final incomingStatus = ozowStatusFromStr(status);
-    if (incomingStatus != OzowStatus.complete) return incomingStatus;
+    if (incomingStatus != OzowStatus.complete) {
+      return (status: incomingStatus, transaction: null);
+    }
 
     ///we only need to verify the status if it is complete
     ///This is to ensure that ozow is aware of this transaction
@@ -171,11 +172,13 @@ class _FlutterOzowState extends State<FlutterOzow> {
     ///if the transaction is null, it means that the transaction
     ///does not exist on Ozow or there was an error getting the transaction
     ///
-    if (transaction == null) return OzowStatus.error;
+    if (transaction == null) {
+      return (status: OzowStatus.error, transaction: null);
+    }
 
     ///return the actual status of the transaction
     ///from Ozow
-    return transaction.status;
+    return (status: transaction.verifiedStatus, transaction: transaction);
   }
 
   void setStatus(OzowStatus status) {
@@ -193,10 +196,19 @@ class _FlutterOzowState extends State<FlutterOzow> {
   @override
   void initState() {
     super.initState();
+    //WidgetsBinding.instance.addPostFrameCallback((_) {
+    /// Check if the variables contain any invalid characters.
+    if (!isValidVariables()) {
+      throw Exception(
+        'Flutter_ozow: Invalid characters in variables, your variables should not contain & or =',
+      );
+    }
 
     /// Get the URI and body for the POST request.
-    final uri = _getContents().uri;
-    final body = _getContents().body;
+    final uri = buildUri();
+
+    // print(uri);
+    // // final body = _getContents().body;
 
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -226,12 +238,9 @@ class _FlutterOzowState extends State<FlutterOzow> {
           },
         ),
       )
-      ..loadRequest(
-        uri,
-        method: LoadRequestMethod.post,
-        body: body,
-      );
+      ..loadRequest(uri);
     setState(() {});
+    // });
   }
 
   @override
@@ -319,7 +328,6 @@ class _FlutterOzowState extends State<FlutterOzow> {
       'successUrl': widget.successUrl,
       'errorUrl': widget.errorUrl,
       'cancelUrl': widget.cancelUrl,
-      'customer': widget.customer,
       'optional1': widget.optional1,
       'optional2': widget.optional2,
       'optional3': widget.optional3,
@@ -335,7 +343,55 @@ class _FlutterOzowState extends State<FlutterOzow> {
     return (uri: uri, body: bodyList);
   }
 
-  // ignore: unused_element
+  /// Constructs the URI and request body.
+  ///
+  /// This prepares the data needed for making the POST request.
+  Uri buildUri() {
+    ///The notification sometimes does not come through.
+    ///if the successUrl, cancelUrl and errorUrl are not set,
+    ///So we set them to the notifyUrl since receiving the notification is more important.
+    widget.successUrl ??= widget.notifyUrl;
+    widget.cancelUrl ??= widget.notifyUrl;
+    widget.errorUrl ??= widget.notifyUrl;
+    //the amount and transactionId are only passed through the
+    //url query strings to show the user the amount and transactionId on the payment page
+    const url = 'https://flutter-ozow.web.app';
+
+    // Prepare the body of the POST request.
+    final body = {
+      'transactionId': widget.transactionId.toString(),
+      'siteCode': widget.siteCode,
+      'privateKey': widget.privateKey,
+      'bankRef': widget.bankRef,
+      'amount': widget.amount.toStringAsFixed(2),
+      'isTest': widget.isTest.toString(),
+      'notifyUrl': widget.notifyUrl,
+      'successUrl': widget.successUrl,
+      'errorUrl': widget.errorUrl,
+      'cancelUrl': widget.cancelUrl,
+      'optional1': widget.optional1,
+      'optional2': widget.optional2,
+      'optional3': widget.optional3,
+      'optional4': widget.optional4,
+      'optional5': widget.optional5,
+    };
+
+    // Create an initial URI object
+    Uri uri = Uri.parse(url);
+
+    // Replace existing query parameters with the new ones
+    uri = uri.replace(
+      queryParameters: body.map(
+        (key, value) => MapEntry(
+          key,
+          value.toString(),
+        ),
+      ),
+    );
+
+    return uri;
+  }
+
   void _generateHash() {
     widget.successUrl ??= widget.notifyUrl;
     widget.cancelUrl ??= widget.notifyUrl;
@@ -347,11 +403,6 @@ class _FlutterOzowState extends State<FlutterOzow> {
         '${widget.amount}'
         '${widget.transactionId}'
         '${widget.bankRef}';
-
-    // Add the optional customer identifier if it is not null
-    if (widget.customer != null) {
-      hashStr += widget.customer!;
-    }
 
     // Add optional fields if they are not null
     var optionalFields = [
@@ -391,5 +442,88 @@ class _FlutterOzowState extends State<FlutterOzow> {
     var bytes = utf8.encode(hashStr);
     // ignore: unused_local_variable
     var hash = sha512.convert(bytes);
+  }
+
+  /// Checks if the variables contain any invalid characters.
+  ///
+  /// This may interfere with query parameters in the URL.
+  bool isValidVariables() {
+    if (widget.transactionId.toString().contains('&') ||
+        widget.transactionId.toString().contains('=')) {
+      return false;
+    }
+    if (widget.siteCode.contains('&') || widget.siteCode.contains('=')) {
+      return false;
+    }
+
+    if (widget.bankRef.contains('&') || widget.bankRef.contains('=')) {
+      return false;
+    }
+    if (widget.apiKey.contains('&') || widget.apiKey.contains('=')) {
+      return false;
+    }
+    if (widget.amount.toString().contains('&') ||
+        widget.amount.toString().contains('=')) {
+      return false;
+    }
+
+    if (widget.privateKey.contains('&') || widget.privateKey.contains('=')) {
+      return false;
+    }
+
+    if (widget.notifyUrl.contains('&') || widget.notifyUrl.contains('=')) {
+      return false;
+    }
+
+    if (widget.successUrl != null) {
+      if (widget.successUrl!.contains('&') ||
+          widget.successUrl!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.errorUrl != null) {
+      if (widget.errorUrl!.contains('&') || widget.errorUrl!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.cancelUrl != null) {
+      if (widget.cancelUrl!.contains('&') || widget.cancelUrl!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.optional1 != null) {
+      if (widget.optional1!.contains('&') || widget.optional1!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.optional2 != null) {
+      if (widget.optional2!.contains('&') || widget.optional2!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.optional3 != null) {
+      if (widget.optional3!.contains('&') || widget.optional3!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.optional4 != null) {
+      if (widget.optional4!.contains('&') || widget.optional4!.contains('=')) {
+        return false;
+      }
+    }
+
+    if (widget.optional5 != null) {
+      if (widget.optional5!.contains('&') || widget.optional5!.contains('=')) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
