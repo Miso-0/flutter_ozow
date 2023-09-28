@@ -1,15 +1,24 @@
 // import 'dart:convert';
 // ignore_for_file: must_be_immutable
+
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ozow/src/models/status.dart';
-import 'package:flutter_ozow/src/widgets/flutter_ozow_internal.dart';
+import 'package:flutter_ozow/src/widgets/flutter_ozow_status.dart';
+import 'package:flutter_ozow/src/widgets/loading_indicator.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:http/http.dart' as http;
+import '../models/ozow_transaction.dart';
 
 /// The `FlutterOzow` widget integrates Ozow payment gateway through a WebView.
 ///
 /// This widget utilizes [webview_flutter] to render a web page that assists
 /// with completing payments via the Ozow payment gateway.
 /// More information can be found at https://ozow.com.
-class FlutterOzow extends StatelessWidget {
+class FlutterOzow extends StatefulWidget {
   FlutterOzow({
     super.key,
     required this.transactionId,
@@ -34,7 +43,7 @@ class FlutterOzow extends StatelessWidget {
     this.height,
   });
 
-  /// Put your desired width and height for the
+  /// Put your desired width and height for the widget.
   final double? width;
   final double? height;
 
@@ -106,30 +115,281 @@ class FlutterOzow extends StatelessWidget {
   final void Function(OzowStatus)? onComplete;
 
   @override
+  State<FlutterOzow> createState() => _FlutterOzowState();
+}
+
+class _FlutterOzowState extends State<FlutterOzow> {
+  /// The controller for the WebView.
+  late final WebViewController controller;
+
+  ///This is the status of the transaction
+  ///
+  OzowStatus? _status;
+
+  ///This is to show the loading indicator widget
+  bool _isLoading = false;
+
+  ///to show the progress of the page loading
+  int progress = 0;
+
+  /// Handles the URL change.
+  /// Then updates the status of the transaction.
+  /// If the onComplete callback is not null, it will be called.
+  /// with the status of the transaction
+  Future<void> handleUrlChange(UrlChange urlChange) async {
+    if (urlChange.url != null) {
+      final url = urlChange.url!;
+      final uri = Uri.parse(url);
+      final queryParams = uri.queryParameters;
+      final status = queryParams['Status'];
+
+      if (status == null) return;
+
+      ///verify the status of the transaction
+      setLoading(true);
+      final verifiedStatus = await _decodeStatus(status);
+      setLoading(false);
+
+      ///update the status of the transaction
+      ///to update the UI
+      setStatus(verifiedStatus);
+
+      ///if the onComplete callback is not null, call it
+      ///with the status of the transaction
+      if (widget.onComplete != null) widget.onComplete!(verifiedStatus);
+    }
+  }
+
+  Future<OzowStatus> _decodeStatus(String status) async {
+    final incomingStatus = ozowStatusFromStr(status);
+    if (incomingStatus != OzowStatus.complete) return incomingStatus;
+
+    ///we only need to verify the status if it is complete
+    ///This is to ensure that ozow is aware of this transaction
+    final transaction = await _getOzowTransaction();
+
+    ///if the transaction is null, it means that the transaction
+    ///does not exist on Ozow or there was an error getting the transaction
+    ///
+    if (transaction == null) return OzowStatus.error;
+
+    ///return the actual status of the transaction
+    ///from Ozow
+    return transaction.status;
+  }
+
+  void setStatus(OzowStatus status) {
+    setState(() {
+      _status = status;
+    });
+  }
+
+  void setLoading(bool loading) {
+    setState(() {
+      _isLoading = loading;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    /// Get the URI and body for the POST request.
+    final uri = _getContents().uri;
+    final body = _getContents().body;
+
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+            setState(() {
+              this.progress = progress;
+            });
+          },
+          onUrlChange: (UrlChange change) => handleUrlChange(change),
+          onPageStarted: (String url) {
+            if (kDebugMode) {
+              print('Flutter_ozow: Page started loading');
+            }
+          },
+          onPageFinished: (String url) {
+            if (kDebugMode) {
+              print('Flutter_ozow: Page finished loading');
+            }
+          },
+          onWebResourceError: (WebResourceError error) {
+            if (kDebugMode) {
+              print('Flutter_ozow: Error loading page: ${error.description}');
+            }
+          },
+        ),
+      )
+      ..loadRequest(
+        uri,
+        method: LoadRequestMethod.post,
+        body: body,
+      );
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: width ?? MediaQuery.sizeOf(context).width,
-      height: height ?? MediaQuery.sizeOf(context).height,
-      child: FlutterOzowInternal(
-        transactionId: transactionId,
-        privateKey: privateKey,
-        apiKey: apiKey,
-        siteCode: siteCode,
-        bankRef: bankRef,
-        amount: amount,
-        isTest: isTest,
-        notifyUrl: notifyUrl,
-        successUrl: successUrl,
-        cancelUrl: cancelUrl,
-        errorUrl: errorUrl,
-        customer: customer,
-        optional1: optional1,
-        optional2: optional2,
-        optional3: optional3,
-        optional4: optional4,
-        optional5: optional5,
-        onComplete: onComplete,
-      ),
+    return Column(
+      children: [
+        LinearProgressIndicator(
+          value: progress / 100,
+          backgroundColor: Colors.transparent,
+          color: const Color.fromRGBO(0, 222, 140, 1),
+        ),
+        if (_isLoading)
+          const FlutterOzowLoadingIndicator()
+        else if (_status == null && !_isLoading)
+          Expanded(
+            child: WebViewWidget(
+              controller: controller,
+            ),
+          )
+        else
+          FlutterOzowStatus(
+            status: _status!,
+          ),
+      ],
     );
+  }
+
+  ///Gets the transaction details from Ozow
+  ///This helps us validate the existence of the transaction on Ozow
+  ///
+  Future<OzowTransaction?> _getOzowTransaction() async {
+    try {
+      const baseUrl = 'https://api.ozow.com/GetTransactionByReference';
+      final url =
+          '$baseUrl?siteCode=${widget.siteCode}&transactionReference=${widget.transactionId}&IsTest=${widget.isTest}';
+
+      final res = await http.get(
+        Uri.parse(url),
+        headers: {
+          'ApiKey': widget.apiKey,
+          'content-type': 'application/json',
+        },
+      );
+
+      if (res.contentLength == 0) return null;
+
+      final json = (jsonDecode(res.body) as List).first;
+
+      return OzowTransaction.fromJson(json as Map<String, dynamic>);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Flutter_ozow: Error getting transaction: $e');
+      }
+      return null;
+    }
+  }
+
+  /// Constructs the URI and request body.
+  ///
+  /// This prepares the data needed for making the POST request.
+  ({Uri uri, Uint8List body}) _getContents() {
+    ///The notification sometimes does not come through.
+    ///if the successUrl, cancelUrl and errorUrl are not set,
+    ///So we set them to the notifyUrl since receiving the notification is more important.
+    widget.successUrl ??= widget.notifyUrl;
+    widget.cancelUrl ??= widget.notifyUrl;
+    widget.errorUrl ??= widget.notifyUrl;
+
+    //after hosting th php file on your server, replace the baseUrl with the url to the php file
+    //the amount and transactionId are only passed through the
+    //url query strings to show the user the amount and transactionId on the payment page
+    const url = 'https://flutter-ozow.azurewebsites.net/';
+    final String baseUrl =
+        '$url?amount=${widget.amount.toStringAsFixed(2)}&transactionId=${widget.transactionId}';
+
+    // Prepare the body of the POST request.
+    final body = {
+      'transactionId': widget.transactionId.toString(),
+      'siteCode': widget.siteCode,
+      'privateKey': widget.privateKey,
+      'bankRef': widget.bankRef,
+      'amount': widget.amount.toStringAsFixed(2),
+      'isTest': widget.isTest.toString(),
+      'notifyUrl': widget.notifyUrl,
+      'successUrl': widget.successUrl,
+      'errorUrl': widget.errorUrl,
+      'cancelUrl': widget.cancelUrl,
+      'customer': widget.customer,
+      'optional1': widget.optional1,
+      'optional2': widget.optional2,
+      'optional3': widget.optional3,
+      'optional4': widget.optional4,
+      'optional5': widget.optional5,
+    };
+
+    // Convert the body to a byte list.
+    final bodyList = Uint8List.fromList(utf8.encode(json.encode(body)));
+    // Parse the URL to a URI.
+    final uri = Uri.parse(baseUrl);
+
+    return (uri: uri, body: bodyList);
+  }
+
+  // ignore: unused_element
+  void _generateHash() {
+    widget.successUrl ??= widget.notifyUrl;
+    widget.cancelUrl ??= widget.notifyUrl;
+    widget.errorUrl ??= widget.notifyUrl;
+
+    var hashStr = '${widget.siteCode}'
+        'ZA'
+        'ZAR'
+        '${widget.amount}'
+        '${widget.transactionId}'
+        '${widget.bankRef}';
+
+    // Add the optional customer identifier if it is not null
+    if (widget.customer != null) {
+      hashStr += widget.customer!;
+    }
+
+    // Add optional fields if they are not null
+    var optionalFields = [
+      widget.optional1,
+      widget.optional2,
+      widget.optional3,
+      widget.optional4,
+      widget.optional5
+    ];
+    for (var optionalField in optionalFields) {
+      if (optionalField != null) {
+        hashStr += optionalField;
+      }
+    }
+
+    // Add URL fields if they are not null
+    var urlFields = [
+      widget.notifyUrl,
+      widget.successUrl,
+      widget.errorUrl,
+      widget.cancelUrl
+    ];
+
+    for (var urlField in urlFields) {
+      if (urlField != null) {
+        hashStr += urlField;
+      }
+    }
+
+    // Add isTest and privateKey at the end
+    hashStr += '$widget.isTest' '$widget.privateKey';
+
+    // Convert the above concatenated string to lowercase
+    hashStr = hashStr.toLowerCase();
+
+    // Generate a SHA512 hash of the lowercase concatenated string
+    var bytes = utf8.encode(hashStr);
+    // ignore: unused_local_variable
+    var hash = sha512.convert(bytes);
   }
 }
