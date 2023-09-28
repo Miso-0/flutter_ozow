@@ -43,4 +43,5 @@
 library flutter_ozow;
 
 // Exports the main widget
+export 'src/models/status.dart';
 export 'src/widgets/flutter_ozow.dart';
