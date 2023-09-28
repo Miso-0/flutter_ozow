@@ -8,7 +8,7 @@ class FlutterOzowLoadingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color.fromRGBO(249, 249, 249, 1),
+      color: const Color.fromRGBO(249, 249, 249, 1),
       padding: const EdgeInsets.only(bottom: 50),
       child: SingleChildScrollView(
         child: Column(

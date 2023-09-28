@@ -1,8 +1,8 @@
 name: flutter_ozow
 description: A simple flutter plugin to integrate Ozow payment gateway into your flutter app.
-version: 1.0.5
-homepage: "http://misomenze.co.za/"
-repository: "https://github.com/Miso-0/flutter_ozow"
+version: 1.0.6
+homepage: "https://misomenze.co.za"
+repository: "https://github.com/Miso-0/flutter_ozow.git"
 
 environment:
   sdk: '>=3.1.0 <4.0.0'

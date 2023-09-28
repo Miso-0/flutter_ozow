@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ozow/src/models/status.dart';
 
-
 /// The `FlutterOzowStatus` widget displays the status of the payment.
 ///
 class FlutterOzowStatus extends StatelessWidget {
