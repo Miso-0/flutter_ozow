@@ -43,4 +43,4 @@
 library flutter_ozow;
 
 // Exports the main widget
-export 'src/flutter_ozow.dart';
+export 'src/widgets/flutter_ozow.dart';

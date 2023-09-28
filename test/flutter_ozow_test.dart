@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:flutter_ozow/src/flutter_ozow.dart'; // import your library containing the FlutterOzow class
+import 'package:flutter_ozow/src/widgets/flutter_ozow.dart'; // import your library containing the FlutterOzow class
 
 void main() {
   testWidgets('FlutterOzow widget builds successfully',
       (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: Scaffold(
           body: FlutterOzow(
             transactionId: '123',
@@ -17,6 +17,8 @@ void main() {
             bankRef: 'BANKREF123',
             amount: 100.0,
             isTest: true,
+            apiKey: 'APIKEY123',
+            notifyUrl: 'https://your-notify-url.com',
           ),
         ),
       ),
