@@ -452,16 +452,13 @@ class _FlutterOzowState extends State<FlutterOzow> {
   final specialCharacters = [
     '&',
     '=',
-    ':',
     ';',
     ',',
     '?',
     '@',
     '+',
-    '\$',
     '#',
-    '[',
-    ']'
+    '%',
   ];
 
   /// Checks if the variables contain any invalid characters.
