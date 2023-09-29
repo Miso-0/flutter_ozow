@@ -284,17 +284,9 @@ class _FlutterOzowState extends State<FlutterOzow> {
 
       final res = await dio.get(url);
 
-      // final res = await http.get(
-      //   Uri.parse(url),
-      //   headers: {
-      //     'ApiKey': widget.apiKey,
-      //     'content-type': 'application/json',
-      //   },
-      // );
+      final data = (res.data as List).first;
 
-      final json = (jsonDecode(res.data) as List).first;
-
-      return OzowTransaction.fromJson(json as Map<String, dynamic>);
+      return OzowTransaction.fromJson(data as Map<String, dynamic>);
     } catch (e) {
       if (kDebugMode) {
         print('Flutter_ozow: Error getting transaction: $e');
