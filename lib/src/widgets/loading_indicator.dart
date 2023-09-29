@@ -19,7 +19,7 @@ class FlutterOzowLoadingIndicator extends StatelessWidget {
             const SizedBox(
               child: Image(
                 image: NetworkImage(
-                  'https://firebasestorage.googleapis.com/v0/b/flutter-ozow.appspot.com/o/tt.png?alt=media&token=63067346-8ab4-4c85-8e95-1708e59d64e4&_gl=1*420cgt*_ga*MTg2MTI0OTAxMy4xNjUzOTAwNTU3*_ga_CW55HF8NVT*MTY5NTk1MTU1OC4zMC4xLjE2OTU5NTE5NTguMTcuMC4w',
+                  'https://firebasestorage.googleapis.com/v0/b/flutter-ozow.appspot.com/o/tt_2.png?alt=media&token=d72d1b2a-2c5c-4b6e-9b35-5422c94fdc60&_gl=1*mbplj*_ga*MTg2MTI0OTAxMy4xNjUzOTAwNTU3*_ga_CW55HF8NVT*MTY5NTk4NDkxOS4zMS4xLjE2OTU5ODUwODguMzYuMC4w',
                 ),
                 fit: BoxFit.fitWidth,
               ),
