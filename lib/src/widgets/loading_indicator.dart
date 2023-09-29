@@ -18,8 +18,8 @@ class FlutterOzowLoadingIndicator extends StatelessWidget {
           children: [
             const SizedBox(
               child: Image(
-                image: AssetImage(
-                  'assets/tt.png',
+                image: NetworkImage(
+                  'https://firebasestorage.googleapis.com/v0/b/flutter-ozow.appspot.com/o/tt.png?alt=media&token=63067346-8ab4-4c85-8e95-1708e59d64e4&_gl=1*420cgt*_ga*MTg2MTI0OTAxMy4xNjUzOTAwNTU3*_ga_CW55HF8NVT*MTY5NTk1MTU1OC4zMC4xLjE2OTU5NTE5NTguMTcuMC4w',
                 ),
                 fit: BoxFit.fitWidth,
               ),
@@ -31,8 +31,8 @@ class FlutterOzowLoadingIndicator extends StatelessWidget {
               height: 80,
               width: 80,
               child: Image(
-                image: AssetImage(
-                  'assets/loading.gif',
+                image: NetworkImage(
+                  'https://firebasestorage.googleapis.com/v0/b/flutter-ozow.appspot.com/o/loading.gif?alt=media&token=bd429e48-0089-4c5d-9b21-f4b827f609bf&_gl=1*1y68yjm*_ga*MTg2MTI0OTAxMy4xNjUzOTAwNTU3*_ga_CW55HF8NVT*MTY5NTk1MTU1OC4zMC4xLjE2OTU5NTE2NTcuNDkuMC4w',
                 ),
               ),
             ),

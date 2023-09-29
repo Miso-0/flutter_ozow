@@ -449,86 +449,51 @@ class _FlutterOzowState extends State<FlutterOzow> {
     var hash = sha512.convert(bytes);
   }
 
+  final specialCharacters = [
+    '&',
+    '=',
+    ':',
+    ';',
+    ',',
+    '?',
+    '@',
+    '+',
+    '\$',
+    '#',
+    '[',
+    ']'
+  ];
+
   /// Checks if the variables contain any invalid characters.
   ///
   /// This may interfere with query parameters in the URL.
   bool isValidVariables() {
-    if (widget.transactionId.toString().contains('&') ||
-        widget.transactionId.toString().contains('=')) {
-      return false;
-    }
-    if (widget.siteCode.contains('&') || widget.siteCode.contains('=')) {
-      return false;
-    }
+    List<String?> variables = [
+      widget.transactionId.toString(),
+      widget.siteCode,
+      widget.bankRef,
+      widget.apiKey,
+      widget.amount.toString(),
+      widget.privateKey,
+      widget.notifyUrl,
+      widget.successUrl,
+      widget.errorUrl,
+      widget.cancelUrl,
+      widget.optional1,
+      widget.optional2,
+      widget.optional3,
+      widget.optional4,
+      widget.optional5
+    ];
 
-    if (widget.bankRef.contains('&') || widget.bankRef.contains('=')) {
-      return false;
-    }
-    if (widget.apiKey.contains('&') || widget.apiKey.contains('=')) {
-      return false;
-    }
-    if (widget.amount.toString().contains('&') ||
-        widget.amount.toString().contains('=')) {
-      return false;
-    }
-
-    if (widget.privateKey.contains('&') || widget.privateKey.contains('=')) {
-      return false;
-    }
-
-    if (widget.notifyUrl.contains('&') || widget.notifyUrl.contains('=')) {
-      return false;
-    }
-
-    if (widget.successUrl != null) {
-      if (widget.successUrl!.contains('&') ||
-          widget.successUrl!.contains('=')) {
-        return false;
+    for (String? variable in variables) {
+      if (variable == null) continue;
+      for (String char in specialCharacters) {
+        if (variable.contains(char)) {
+          return false;
+        }
       }
     }
-
-    if (widget.errorUrl != null) {
-      if (widget.errorUrl!.contains('&') || widget.errorUrl!.contains('=')) {
-        return false;
-      }
-    }
-
-    if (widget.cancelUrl != null) {
-      if (widget.cancelUrl!.contains('&') || widget.cancelUrl!.contains('=')) {
-        return false;
-      }
-    }
-
-    if (widget.optional1 != null) {
-      if (widget.optional1!.contains('&') || widget.optional1!.contains('=')) {
-        return false;
-      }
-    }
-
-    if (widget.optional2 != null) {
-      if (widget.optional2!.contains('&') || widget.optional2!.contains('=')) {
-        return false;
-      }
-    }
-
-    if (widget.optional3 != null) {
-      if (widget.optional3!.contains('&') || widget.optional3!.contains('=')) {
-        return false;
-      }
-    }
-
-    if (widget.optional4 != null) {
-      if (widget.optional4!.contains('&') || widget.optional4!.contains('=')) {
-        return false;
-      }
-    }
-
-    if (widget.optional5 != null) {
-      if (widget.optional5!.contains('&') || widget.optional5!.contains('=')) {
-        return false;
-      }
-    }
-
     return true;
   }
 }
