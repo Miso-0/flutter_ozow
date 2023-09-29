@@ -61,8 +61,12 @@ FlutterOzow(
   privateKey: 'your-private-key',
   siteCode: 'your-site-code',
   bankRef: 'bank-reference',
+  apiKey:'your-ozow-api-key',
   amount: 50.00,
   isTest: true,
+  onComplete: (OzowTransaction? transaction, OzowStatus? status) {
+    //TODO: Something cool here    
+  },
 )
 ```
 
@@ -75,12 +79,13 @@ FlutterOzow(
 | siteCode      | Your Ozow site code. | Yes | String |
 | bankRef       | Reference for the user's bank statement. | Yes | String |
 | amount        | Amount to be paid. | Yes | double |
+| apiKey        | Your Ozow API key. | Yes | String |
 | isTest        | Flag to indicate test transactions. | Yes | bool  |
+| onComplete    | Callback function for when the transaction is complete. | No  | Function(OzowTransaction?,OzowStatus)? |
 | notifyUrl     | URL for notifications. | No  | String? |
 | successUrl    | URL for successful payments. | No  | String? |
 | errorUrl      | URL for failed payments. | No  | String? |
 | cancelUrl     | URL for cancelled payments. | No  | String? |
-| customName    | Custom name for the transaction. | No  | String? |
 | optional1     | Additional optional parameter. | No  | String? |
 | optional2     | Additional optional parameter. | No  | String? |
 | optional3     | Additional optional parameter. | No  | String? |
@@ -121,6 +126,8 @@ Refer to the `example` app
 
 For more examples, see the `example` directory.
 
+### Support
+<a href="https://www.buymeacoffee.com/misomenze"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" width="150" /></a>
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/Miso-0/flutter_ozow/blob/main/flutter_ozow/LICENSE) file for details.

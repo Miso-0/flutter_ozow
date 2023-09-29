@@ -1,16 +1,19 @@
+// Copyright 2023 Miso Menze
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
 // import 'dart:convert';
 // ignore_for_file: must_be_immutable, unused_element
 
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ozow/src/models/status.dart';
 import 'package:flutter_ozow/src/widgets/flutter_ozow_status.dart';
 import 'package:flutter_ozow/src/widgets/loading_indicator.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:http/http.dart' as http;
 import '../models/ozow_transaction.dart';
 
 /// The `FlutterOzow` widget integrates Ozow payment gateway through a WebView.
@@ -38,13 +41,11 @@ class FlutterOzow extends StatefulWidget {
     this.optional4,
     this.optional5,
     this.onComplete,
-    this.width,
-    this.height,
   });
 
   /// Put your desired width and height for the widget.
-  final double? width;
-  final double? height;
+  // final double? width;
+  // final double? height;
 
   /// Unique transaction ID or order number generated from your backend.
   ///
@@ -246,6 +247,7 @@ class _FlutterOzowState extends State<FlutterOzow> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         LinearProgressIndicator(
           value: progress / 100,
@@ -273,21 +275,24 @@ class _FlutterOzowState extends State<FlutterOzow> {
   ///
   Future<OzowTransaction?> _getOzowTransaction() async {
     try {
+      final dio = Dio();
       const baseUrl = 'https://api.ozow.com/GetTransactionByReference';
       final url =
           '$baseUrl?siteCode=${widget.siteCode}&transactionReference=${widget.transactionId}&IsTest=${widget.isTest}';
 
-      final res = await http.get(
-        Uri.parse(url),
-        headers: {
-          'ApiKey': widget.apiKey,
-          'content-type': 'application/json',
-        },
-      );
+      dio.options.headers['ApiKey'] = widget.apiKey;
 
-      if (res.contentLength == 0) return null;
+      final res = await dio.get(url);
 
-      final json = (jsonDecode(res.body) as List).first;
+      // final res = await http.get(
+      //   Uri.parse(url),
+      //   headers: {
+      //     'ApiKey': widget.apiKey,
+      //     'content-type': 'application/json',
+      //   },
+      // );
+
+      final json = (jsonDecode(res.data) as List).first;
 
       return OzowTransaction.fromJson(json as Map<String, dynamic>);
     } catch (e) {
