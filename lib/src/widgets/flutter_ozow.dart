@@ -4,17 +4,15 @@
 // import 'dart:convert';
 // ignore_for_file: must_be_immutable, unused_element
 
-import 'dart:convert';
-
-import 'package:crypto/crypto.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ozow/src/controllers/flutter_ozow_controller.dart';
 import 'package:flutter_ozow/src/models/status.dart';
 import 'package:flutter_ozow/src/widgets/flutter_ozow_status.dart';
-import 'package:flutter_ozow/src/widgets/loading_indicator.dart';
+import 'package:flutter_ozow/src/widgets/flutter_ozow_loading_indicator.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import '../models/ozow_transaction.dart';
+import '../models/transaction.dart';
+import 'flutter_ozow_linear_loading_indicator.dart';
+import 'flutter_ozow_web_view.dart';
 
 /// The `FlutterOzow` widget integrates Ozow payment gateway through a WebView.
 ///
@@ -108,7 +106,7 @@ class FlutterOzow extends StatefulWidget {
   final String? optional4;
   final String? optional5;
 
-  ///A callback function that
+  ///A callback function that is excuted when the transaction is complete
   final void Function(OzowTransaction?, OzowStatus)? onComplete;
 
   @override
@@ -116,8 +114,8 @@ class FlutterOzow extends StatefulWidget {
 }
 
 class _FlutterOzowState extends State<FlutterOzow> {
-  /// The controller for the WebView.
-  late final WebViewController controller;
+  ///
+  late final FlutterOzowController ozowController;
 
   ///This is the status of the transaction
   ///
@@ -128,59 +126,6 @@ class _FlutterOzowState extends State<FlutterOzow> {
 
   ///to show the progress of the page loading
   int progress = 0;
-
-  /// Handles the URL change.
-  /// Then updates the status of the transaction.
-  /// If the onComplete callback is not null, it will be called.
-  /// with the status of the transaction
-  Future<void> handleUrlChange(UrlChange urlChange) async {
-    if (urlChange.url != null) {
-      final url = urlChange.url!;
-      final uri = Uri.parse(url);
-      final queryParams = uri.queryParameters;
-      final status = queryParams['Status'];
-
-      if (status == null) return;
-
-      ///verify the status of the transaction
-      setLoading(true);
-      final res = await _decodeStatus(status);
-      setLoading(false);
-
-      ///update the status of the transaction
-      ///to update the UI
-      setStatus(res.status);
-
-      ///if the onComplete callback is not null, call it
-      ///with the status of the transaction
-      if (widget.onComplete != null) {
-        widget.onComplete!(res.transaction, res.status);
-      }
-    }
-  }
-
-  Future<({OzowStatus status, OzowTransaction? transaction})> _decodeStatus(
-      String status) async {
-    final incomingStatus = ozowStatusFromStr(status);
-    if (incomingStatus != OzowStatus.complete) {
-      return (status: incomingStatus, transaction: null);
-    }
-
-    ///we only need to verify the status if it is complete
-    ///This is to ensure that ozow is aware of this transaction
-    final transaction = await _getOzowTransaction();
-
-    ///if the transaction is null, it means that the transaction
-    ///does not exist on Ozow or there was an error getting the transaction
-    ///
-    if (transaction == null) {
-      return (status: OzowStatus.error, transaction: null);
-    }
-
-    ///return the actual status of the transaction
-    ///from Ozow
-    return (status: transaction.verifiedStatus, transaction: transaction);
-  }
 
   void setStatus(OzowStatus status) {
     setState(() {
@@ -197,51 +142,19 @@ class _FlutterOzowState extends State<FlutterOzow> {
   @override
   void initState() {
     super.initState();
-    //WidgetsBinding.instance.addPostFrameCallback((_) {
-    /// Check if the variables contain any invalid characters.
-    if (!isValidVariables()) {
-      throw Exception(
-        'Flutter_ozow: Invalid characters in variables, your variables should not contain & or =',
-      );
-    }
 
-    /// Get the URI and body for the POST request.
-    final uri = buildUri();
-
-    // print(uri);
-    // // final body = _getContents().body;
-
-    controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: (int progress) {
-            setState(() {
-              this.progress = progress;
-            });
-          },
-          onUrlChange: (UrlChange change) => handleUrlChange(change),
-          onPageStarted: (String url) {
-            if (kDebugMode) {
-              print('Flutter_ozow: Page started loading');
-            }
-          },
-          onPageFinished: (String url) {
-            if (kDebugMode) {
-              print('Flutter_ozow: Page finished loading');
-            }
-          },
-          onWebResourceError: (WebResourceError error) {
-            if (kDebugMode) {
-              print('Flutter_ozow: Error loading page: ${error.description}');
-            }
-          },
-        ),
-      )
-      ..loadRequest(uri);
-    setState(() {});
-    // });
+    ///initialize the controller
+    ozowController = FlutterOzowController(
+      widget,
+      onProgress: (int progress) {
+        setState(() {
+          this.progress = progress;
+        });
+      },
+      onUrlChange: (UrlChange change) => handleUrlChange(
+        change,
+      ),
+    );
   }
 
   @override
@@ -249,240 +162,57 @@ class _FlutterOzowState extends State<FlutterOzow> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        LinearProgressIndicator(
-          value: progress / 100,
-          backgroundColor: Colors.transparent,
-          color: const Color.fromRGBO(0, 222, 140, 1),
-        ),
-        if (_isLoading)
+        // Display a progress indicator with custom color.
+        FlutterOzowLinearLoadingIndicator(progress: progress),
+
+        // Show the WebViewWidget when both '_status' is null and '_isLoading' is false.
+        // This implies that there is no current status and loading is complete.
+        if (_status == null && !_isLoading)
+          FlutterOzowWebView(ozowController: ozowController)
+
+        // Show a loading indicator when '_isLoading' is true.
+        // This implies that some data or UI is being loaded.
+        else if (_isLoading)
           const FlutterOzowLoadingIndicator()
-        else if (_status == null && !_isLoading)
-          Expanded(
-            child: WebViewWidget(
-              controller: controller,
-            ),
-          )
+
+        // Show FlutterOzowStatus when '_status' is not null.
+        // This implies that there is a status to be displayed (e.g., error, success).
         else
-          FlutterOzowStatus(
-            status: _status!,
-          ),
+
+          //if the onCompleteWidget is not null, call it
+          //with the status of the transaction
+          FlutterOzowStatus(status: _status!),
       ],
     );
   }
 
-  ///Gets the transaction details from Ozow
-  ///This helps us validate the existence of the transaction on Ozow
-  ///
-  Future<OzowTransaction?> _getOzowTransaction() async {
-    try {
-      final dio = Dio();
-      const baseUrl = 'https://api.ozow.com/GetTransactionByReference';
-      final url =
-          '$baseUrl?siteCode=${widget.siteCode}&transactionReference=${widget.transactionId}&IsTest=${widget.isTest}';
+  /// Handles the URL change.
+  /// Then updates the status of the transaction.
+  /// If the onComplete callback is not null, it will be called.
+  /// with the status of the transaction
+  Future<void> handleUrlChange(UrlChange urlChange) async {
+    if (urlChange.url != null) {
+      final url = urlChange.url!;
+      final uri = Uri.parse(url);
+      final queryParams = uri.queryParameters;
+      final status = queryParams['Status'];
 
-      dio.options.headers['ApiKey'] = widget.apiKey;
+      if (status == null) return;
 
-      final res = await dio.get(url);
+      ///verify the status of the transaction
+      setLoading(true);
+      final res = await ozowController.decodeStatus(status);
+      setLoading(false);
 
-      final data = (res.data as List).first;
+      ///update the status of the transaction
+      ///to update the UI
+      setStatus(res.status);
 
-      return OzowTransaction.fromJson(data as Map<String, dynamic>);
-    } catch (e) {
-      if (kDebugMode) {
-        print('Flutter_ozow: Error getting transaction: $e');
-      }
-      return null;
-    }
-  }
-
-  /// Constructs the URI and request body.
-  ///
-  /// This prepares the data needed for making the POST request.
-  ({Uri uri, Uint8List body}) _getContents() {
-    ///The notification sometimes does not come through.
-    ///if the successUrl, cancelUrl and errorUrl are not set,
-    ///So we set them to the notifyUrl since receiving the notification is more important.
-    widget.successUrl ??= widget.notifyUrl;
-    widget.cancelUrl ??= widget.notifyUrl;
-    widget.errorUrl ??= widget.notifyUrl;
-
-    //after hosting th php file on your server, replace the baseUrl with the url to the php file
-    //the amount and transactionId are only passed through the
-    //url query strings to show the user the amount and transactionId on the payment page
-    const url = 'https://flutter-ozow.azurewebsites.net/';
-    final String baseUrl =
-        '$url?amount=${widget.amount.toStringAsFixed(2)}&transactionId=${widget.transactionId}';
-
-    // Prepare the body of the POST request.
-    final body = {
-      'transactionId': widget.transactionId.toString(),
-      'siteCode': widget.siteCode,
-      'privateKey': widget.privateKey,
-      'bankRef': widget.bankRef,
-      'amount': widget.amount.toStringAsFixed(2),
-      'isTest': widget.isTest.toString(),
-      'notifyUrl': widget.notifyUrl,
-      'successUrl': widget.successUrl,
-      'errorUrl': widget.errorUrl,
-      'cancelUrl': widget.cancelUrl,
-      'optional1': widget.optional1,
-      'optional2': widget.optional2,
-      'optional3': widget.optional3,
-      'optional4': widget.optional4,
-      'optional5': widget.optional5,
-    };
-
-    // Convert the body to a byte list.
-    final bodyList = Uint8List.fromList(utf8.encode(json.encode(body)));
-    // Parse the URL to a URI.
-    final uri = Uri.parse(baseUrl);
-
-    return (uri: uri, body: bodyList);
-  }
-
-  /// Constructs the URI and request body.
-  ///
-  /// This prepares the data needed for making the POST request.
-  Uri buildUri() {
-    ///The notification sometimes does not come through.
-    ///if the successUrl, cancelUrl and errorUrl are not set,
-    ///So we set them to the notifyUrl since receiving the notification is more important.
-    widget.successUrl ??= widget.notifyUrl;
-    widget.cancelUrl ??= widget.notifyUrl;
-    widget.errorUrl ??= widget.notifyUrl;
-    //the amount and transactionId are only passed through the
-    //url query strings to show the user the amount and transactionId on the payment page
-    const url = 'https://flutter-ozow.web.app';
-
-    // Prepare the body of the POST request.
-    final body = {
-      'transactionId': widget.transactionId.toString(),
-      'siteCode': widget.siteCode,
-      'privateKey': widget.privateKey,
-      'bankRef': widget.bankRef,
-      'amount': widget.amount.toStringAsFixed(2),
-      'isTest': widget.isTest.toString(),
-      'notifyUrl': widget.notifyUrl,
-      'successUrl': widget.successUrl,
-      'errorUrl': widget.errorUrl,
-      'cancelUrl': widget.cancelUrl,
-      'optional1': widget.optional1,
-      'optional2': widget.optional2,
-      'optional3': widget.optional3,
-      'optional4': widget.optional4,
-      'optional5': widget.optional5,
-    };
-
-    // Create an initial URI object
-    Uri uri = Uri.parse(url);
-
-    // Replace existing query parameters with the new ones
-    uri = uri.replace(
-      queryParameters: body.map(
-        (key, value) => MapEntry(
-          key,
-          value.toString(),
-        ),
-      ),
-    );
-
-    return uri;
-  }
-
-  void _generateHash() {
-    widget.successUrl ??= widget.notifyUrl;
-    widget.cancelUrl ??= widget.notifyUrl;
-    widget.errorUrl ??= widget.notifyUrl;
-
-    var hashStr = '${widget.siteCode}'
-        'ZA'
-        'ZAR'
-        '${widget.amount}'
-        '${widget.transactionId}'
-        '${widget.bankRef}';
-
-    // Add optional fields if they are not null
-    var optionalFields = [
-      widget.optional1,
-      widget.optional2,
-      widget.optional3,
-      widget.optional4,
-      widget.optional5
-    ];
-    for (var optionalField in optionalFields) {
-      if (optionalField != null) {
-        hashStr += optionalField;
+      ///if the onComplete callback is not null, call it
+      ///with the status of the transaction
+      if (widget.onComplete != null) {
+        widget.onComplete!(res.transaction, res.status);
       }
     }
-
-    // Add URL fields if they are not null
-    var urlFields = [
-      widget.notifyUrl,
-      widget.successUrl,
-      widget.errorUrl,
-      widget.cancelUrl
-    ];
-
-    for (var urlField in urlFields) {
-      if (urlField != null) {
-        hashStr += urlField;
-      }
-    }
-
-    // Add isTest and privateKey at the end
-    hashStr += '$widget.isTest' '$widget.privateKey';
-
-    // Convert the above concatenated string to lowercase
-    hashStr = hashStr.toLowerCase();
-
-    // Generate a SHA512 hash of the lowercase concatenated string
-    var bytes = utf8.encode(hashStr);
-    // ignore: unused_local_variable
-    var hash = sha512.convert(bytes);
-  }
-
-  final specialCharacters = [
-    '&',
-    '=',
-    ';',
-    ',',
-    '?',
-    '@',
-    '+',
-    '#',
-    '%',
-  ];
-
-  /// Checks if the variables contain any invalid characters.
-  ///
-  /// This may interfere with query parameters in the URL.
-  bool isValidVariables() {
-    List<String?> variables = [
-      widget.transactionId.toString(),
-      widget.siteCode,
-      widget.bankRef,
-      widget.apiKey,
-      widget.amount.toString(),
-      widget.privateKey,
-      widget.notifyUrl,
-      widget.successUrl,
-      widget.errorUrl,
-      widget.cancelUrl,
-      widget.optional1,
-      widget.optional2,
-      widget.optional3,
-      widget.optional4,
-      widget.optional5
-    ];
-
-    for (String? variable in variables) {
-      if (variable == null) continue;
-      for (String char in specialCharacters) {
-        if (variable.contains(char)) {
-          return false;
-        }
-      }
-    }
-    return true;
   }
 }
