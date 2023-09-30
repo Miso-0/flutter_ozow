@@ -32,7 +32,7 @@ class FlutterOzowController {
   WebViewController _init() {
     //WidgetsBinding.instance.addPostFrameCallback((_) {
     /// Check if the variables contain any invalid characters.
-    if (_isValidVariables()) {
+    if (!_isValidVariables()) {
       ///'&', '=', ';', ',', '?', '@', '+', '#', '%'
       throw Exception(
           'Flutter_ozow: Invalid characters in variables, your variables \nshould not contain any of the following characters: & = ; , ? @ + # %');
