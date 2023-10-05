@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Minor fixes and improvements, to make the plugin more stable.
+
 ## 1.0.9
 
 * Minor visible fixes, Updated image background to a transparent image.

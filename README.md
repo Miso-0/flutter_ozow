@@ -64,7 +64,7 @@ FlutterOzow(
   apiKey:'your-ozow-api-key',
   amount: 50.00,
   isTest: true,
-  onComplete: (OzowTransaction? transaction, OzowStatus? status) {
+  onComplete: (OzowTransaction? transaction, OzowStatus status) {
     //TODO: Something cool here    
   },
 )

@@ -35,7 +35,8 @@ class FlutterOzowController {
     if (!_isValidVariables()) {
       ///'&', '=', ';', ',', '?', '@', '+', '#', '%'
       throw Exception(
-          'Flutter_ozow: Invalid characters in variables, your variables \nshould not contain any of the following characters: & = ; , ? @ + # %');
+        'Flutter_ozow: Invalid characters in variables, your variables \nshould not contain any of the following characters: & = ; , ? @ + # %',
+      );
     }
     return WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
