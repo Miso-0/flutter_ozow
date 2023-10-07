@@ -16,20 +16,22 @@ class FlutterOzowLoadingIndicator extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(
-              child: Image(
-                image: AssetImage("lib/assets/tt.png"),
+            SizedBox(
+              child: Image.asset(
+                "assets/backgroud.png",
+                package: "flutter_ozow",
                 fit: BoxFit.fitWidth,
               ),
             ),
             const SizedBox(
               height: 15,
             ),
-            const SizedBox(
+            SizedBox(
               height: 80,
               width: 80,
-              child: Image(
-                image: AssetImage("lib/assets/loading_gif.gif"),
+              child: Image.asset(
+                "assets/loading_gif.gif",
+                package: "flutter_ozow",
               ),
             ),
             const SizedBox(

@@ -24,7 +24,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - packages/flutter_ozow/assets/tt.png
+    - packages/flutter_ozow/assets/backgroud.png
     - packages/flutter_ozow/assets/multiply.png
     - packages/flutter_ozow/assets/abandon.png
     - packages/flutter_ozow/assets/loading_gif.gif
