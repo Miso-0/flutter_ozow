@@ -16,9 +16,10 @@ class FlutterOzowStatus extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(
-            child: Image(
-              image: AssetImage("lib/assets/tt.png"),
+          SizedBox(
+            child: Image.asset(
+              "assets/tt.png",
+              package: "flutter_ozow",
               fit: BoxFit.fitWidth,
             ),
           ),
@@ -28,8 +29,9 @@ class FlutterOzowStatus extends StatelessWidget {
           SizedBox(
             height: 100,
             width: 100,
-            child: Image(
-              image: AssetImage(status.image),
+            child: Image.asset(
+              status.image,
+              package: "flutter_ozow",
             ),
           ),
           const SizedBox(
@@ -66,45 +68,45 @@ class FlutterOzowStatus extends StatelessWidget {
     switch (status) {
       case OzowStatus.complete:
         return (
-          image: "lib/assets/success.png",
+          image: "assets/success.png",
           title: "Payment Successful",
           message: "Great news! The payment was successful.",
         );
       case OzowStatus.cancelled:
         return (
-          image: "lib/assets/multiply.png",
+          image: "assets/multiply.png",
           title: "Payment Cancelled",
           message: "The payment was cancelled.",
         );
 
       case OzowStatus.abandoned:
         return (
-          image: "lib/assets/abandon.png",
+          image: "assets/abandon.png",
           title: "Payment Abandoned",
           message: "The payment was abandoned.",
         );
 
       case OzowStatus.pendingInvestigation:
         return (
-          image: "lib/assets/expired.png",
+          image: "assets/expired.png",
           title: "Payment Pending",
           message: "The payment is pending investigation.",
         );
       case OzowStatus.pending:
         return (
-          image: "lib/assets/expired.png",
+          image: "assets/expired.png",
           title: "Payment Pending",
           message: "The status cannot be determined as yet.",
         );
       case OzowStatus.error:
         return (
-          image: "lib/assets/multiply.png",
+          image: "assets/multiply.png",
           title: "Payment Error",
           message: "An error occurred while processing the payment.",
         );
       default:
         return (
-          image: "lib/assets/multiply.png",
+          image: "assets/multiply.png",
           title: "Payment Error",
           message: "An error occurred while processing the payment.",
         );
