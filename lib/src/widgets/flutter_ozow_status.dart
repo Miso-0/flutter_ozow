@@ -18,7 +18,7 @@ class FlutterOzowStatus extends StatelessWidget {
         children: [
           const SizedBox(
             child: Image(
-              image: AssetImage("lib/lib/assets/tt.png"),
+              image: AssetImage("lib/assets/tt.png"),
               fit: BoxFit.fitWidth,
             ),
           ),
