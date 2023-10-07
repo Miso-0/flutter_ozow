@@ -18,7 +18,7 @@ class FlutterOzowLoadingIndicator extends StatelessWidget {
           children: [
             const SizedBox(
               child: Image(
-                image: AssetImage("assets/tt.png"),
+                image: AssetImage("lib/assets/tt.png"),
                 fit: BoxFit.fitWidth,
               ),
             ),
@@ -29,7 +29,7 @@ class FlutterOzowLoadingIndicator extends StatelessWidget {
               height: 80,
               width: 80,
               child: Image(
-                image: AssetImage("assets/loading_gif.gif"),
+                image: AssetImage("lib/assets/loading_gif.gif"),
               ),
             ),
             const SizedBox(

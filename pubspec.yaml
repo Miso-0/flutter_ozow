@@ -24,6 +24,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/
+    - packages/flutter_ozow/lib/assets/
 
 

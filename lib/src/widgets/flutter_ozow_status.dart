@@ -18,7 +18,7 @@ class FlutterOzowStatus extends StatelessWidget {
         children: [
           const SizedBox(
             child: Image(
-              image: AssetImage("assets/tt.png"),
+              image: AssetImage("lib/lib/assets/tt.png"),
               fit: BoxFit.fitWidth,
             ),
           ),
@@ -66,45 +66,45 @@ class FlutterOzowStatus extends StatelessWidget {
     switch (status) {
       case OzowStatus.complete:
         return (
-          image: "assets/success.png",
+          image: "lib/assets/success.png",
           title: "Payment Successful",
           message: "Great news! The payment was successful.",
         );
       case OzowStatus.cancelled:
         return (
-          image: "assets/multiply.png",
+          image: "lib/assets/multiply.png",
           title: "Payment Cancelled",
           message: "The payment was cancelled.",
         );
 
       case OzowStatus.abandoned:
         return (
-          image: "assets/abandon.png",
+          image: "lib/assets/abandon.png",
           title: "Payment Abandoned",
           message: "The payment was abandoned.",
         );
 
       case OzowStatus.pendingInvestigation:
         return (
-          image: "assets/expired.png",
+          image: "lib/assets/expired.png",
           title: "Payment Pending",
           message: "The payment is pending investigation.",
         );
       case OzowStatus.pending:
         return (
-          image: "assets/expired.png",
+          image: "lib/assets/expired.png",
           title: "Payment Pending",
           message: "The status cannot be determined as yet.",
         );
       case OzowStatus.error:
         return (
-          image: "assets/multiply.png",
+          image: "lib/assets/multiply.png",
           title: "Payment Error",
           message: "An error occurred while processing the payment.",
         );
       default:
         return (
-          image: "assets/multiply.png",
+          image: "lib/assets/multiply.png",
           title: "Payment Error",
           message: "An error occurred while processing the payment.",
         );
