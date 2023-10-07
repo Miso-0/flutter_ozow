@@ -7,64 +7,6 @@ class FlutterOzowStatus extends StatelessWidget {
   const FlutterOzowStatus({super.key, required this.status});
   final OzowStatus status;
 
-  /// The appropriate image, title and message for the status.
-  /// based on the [status] provided.
-  ({String image, String title, String message}) buildStatus() {
-    switch (status) {
-      case OzowStatus.complete:
-        return (
-          image:
-              'https://firebasestorage.googleapis.com/v0/b/flutter-ozow.appspot.com/o/success.png?alt=media&token=97ffb95c-f555-4c70-88e6-0adaea8a24a0&_gl=1*116gkt3*_ga*MTg2MTI0OTAxMy4xNjUzOTAwNTU3*_ga_CW55HF8NVT*MTY5NTk1MTU1OC4zMC4xLjE2OTU5NTE5MTUuNjAuMC4w',
-          title: 'Payment Successful',
-          message: 'Great news! The payment was successful.',
-        );
-      case OzowStatus.cancelled:
-        return (
-          image:
-              'https://firebasestorage.googleapis.com/v0/b/flutter-ozow.appspot.com/o/multiply.png?alt=media&token=19bd260a-9357-463c-93c6-da86e7993fc2&_gl=1*dad5co*_ga*MTg2MTI0OTAxMy4xNjUzOTAwNTU3*_ga_CW55HF8NVT*MTY5NTk1MTU1OC4zMC4xLjE2OTU5NTE4ODEuMTAuMC4w',
-          title: 'Payment Cancelled',
-          message: 'The payment was cancelled.',
-        );
-
-      case OzowStatus.abandoned:
-        return (
-          image:
-              'https://firebasestorage.googleapis.com/v0/b/flutter-ozow.appspot.com/o/abandon.png?alt=media&token=36dbffff-e6d7-4877-9a72-9396613c0d71&_gl=1*1kdbxf*_ga*MTg2MTI0OTAxMy4xNjUzOTAwNTU3*_ga_CW55HF8NVT*MTY5NTk1MTU1OC4zMC4xLjE2OTU5NTE3ODMuNDcuMC4w',
-          title: 'Payment Abandoned',
-          message: 'The payment was abandoned.',
-        );
-
-      case OzowStatus.pendingInvestigation:
-        return (
-          image:
-              'https://firebasestorage.googleapis.com/v0/b/flutter-ozow.appspot.com/o/expired.png?alt=media&token=5032b2c6-8a10-4590-8d68-58edbc1a43e4&_gl=1*bb45fa*_ga*MTg2MTI0OTAxMy4xNjUzOTAwNTU3*_ga_CW55HF8NVT*MTY5NTk1MTU1OC4zMC4xLjE2OTU5NTE4MzEuNjAuMC4w',
-          title: 'Payment Pending',
-          message: 'The payment is pending investigation.',
-        );
-      case OzowStatus.pending:
-        return (
-          image:
-              'https://firebasestorage.googleapis.com/v0/b/flutter-ozow.appspot.com/o/expired.png?alt=media&token=5032b2c6-8a10-4590-8d68-58edbc1a43e4&_gl=1*bb45fa*_ga*MTg2MTI0OTAxMy4xNjUzOTAwNTU3*_ga_CW55HF8NVT*MTY5NTk1MTU1OC4zMC4xLjE2OTU5NTE4MzEuNjAuMC4w',
-          title: 'Payment Pending',
-          message: 'The status cannot be determined as yet.',
-        );
-      case OzowStatus.error:
-        return (
-          image:
-              'https://firebasestorage.googleapis.com/v0/b/flutter-ozow.appspot.com/o/multiply.png?alt=media&token=19bd260a-9357-463c-93c6-da86e7993fc2&_gl=1*dad5co*_ga*MTg2MTI0OTAxMy4xNjUzOTAwNTU3*_ga_CW55HF8NVT*MTY5NTk1MTU1OC4zMC4xLjE2OTU5NTE4ODEuMTAuMC4w',
-          title: 'Payment Error',
-          message: 'An error occurred while processing the payment.',
-        );
-      default:
-        return (
-          image:
-              'https://firebasestorage.googleapis.com/v0/b/flutter-ozow.appspot.com/o/multiply.png?alt=media&token=19bd260a-9357-463c-93c6-da86e7993fc2&_gl=1*dad5co*_ga*MTg2MTI0OTAxMy4xNjUzOTAwNTU3*_ga_CW55HF8NVT*MTY5NTk1MTU1OC4zMC4xLjE2OTU5NTE4ODEuMTAuMC4w',
-          title: 'Payment Error',
-          message: 'An error occurred while processing the payment.',
-        );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final status = buildStatus();
@@ -74,11 +16,10 @@ class FlutterOzowStatus extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(
-            child: Image(
-              image: NetworkImage(
-                'https://firebasestorage.googleapis.com/v0/b/flutter-ozow.appspot.com/o/tt_2.png?alt=media&token=d72d1b2a-2c5c-4b6e-9b35-5422c94fdc60&_gl=1*mbplj*_ga*MTg2MTI0OTAxMy4xNjUzOTAwNTU3*_ga_CW55HF8NVT*MTY5NTk4NDkxOS4zMS4xLjE2OTU5ODUwODguMzYuMC4w',
-              ),
+          SizedBox(
+            child: Image.asset(
+              "assets/backgroud.png",
+              package: "flutter_ozow",
               fit: BoxFit.fitWidth,
             ),
           ),
@@ -88,10 +29,9 @@ class FlutterOzowStatus extends StatelessWidget {
           SizedBox(
             height: 100,
             width: 100,
-            child: Image(
-              image: NetworkImage(
-                status.image,
-              ),
+            child: Image.asset(
+              status.image,
+              package: "flutter_ozow",
             ),
           ),
           const SizedBox(
@@ -120,5 +60,56 @@ class FlutterOzowStatus extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// The appropriate image, title and message for the status.
+  /// based on the [status] provided.
+  ({String image, String title, String message}) buildStatus() {
+    switch (status) {
+      case OzowStatus.complete:
+        return (
+          image: "assets/success.png",
+          title: "Payment Successful",
+          message: "Great news! The payment was successful.",
+        );
+      case OzowStatus.cancelled:
+        return (
+          image: "assets/multiply.png",
+          title: "Payment Cancelled",
+          message: "The payment was cancelled.",
+        );
+
+      case OzowStatus.abandoned:
+        return (
+          image: "assets/abandon.png",
+          title: "Payment Abandoned",
+          message: "The payment was abandoned.",
+        );
+
+      case OzowStatus.pendingInvestigation:
+        return (
+          image: "assets/expired.png",
+          title: "Payment Pending",
+          message: "The payment is pending investigation.",
+        );
+      case OzowStatus.pending:
+        return (
+          image: "assets/expired.png",
+          title: "Payment Pending",
+          message: "The status cannot be determined as yet.",
+        );
+      case OzowStatus.error:
+        return (
+          image: "assets/multiply.png",
+          title: "Payment Error",
+          message: "An error occurred while processing the payment.",
+        );
+      default:
+        return (
+          image: "assets/multiply.png",
+          title: "Payment Error",
+          message: "An error occurred while processing the payment.",
+        );
+    }
   }
 }
