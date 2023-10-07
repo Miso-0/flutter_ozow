@@ -24,6 +24,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - packages/flutter_ozow/assets/
+    - packages/flutter_ozow/assets/multiply.png
 
 
