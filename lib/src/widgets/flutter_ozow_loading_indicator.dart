@@ -18,7 +18,7 @@ class FlutterOzowLoadingIndicator extends StatelessWidget {
           children: [
             const SizedBox(
               child: Image(
-                image: AssetImage('assets/tt.png'),
+                image: AssetImage("assets/tt.png"),
                 fit: BoxFit.fitWidth,
               ),
             ),
@@ -29,7 +29,7 @@ class FlutterOzowLoadingIndicator extends StatelessWidget {
               height: 80,
               width: 80,
               child: Image(
-                image: AssetImage('assets/loading_gif.gif'),
+                image: AssetImage("assets/loading_gif.gif"),
               ),
             ),
             const SizedBox(
@@ -39,7 +39,7 @@ class FlutterOzowLoadingIndicator extends StatelessWidget {
               width: 250,
               padding: const EdgeInsets.only(left: 20, right: 20, top: 5),
               child: Text(
-                'Hold on while we verify your payment',
+                "Hold on while we verify your payment",
                 style: TextStyle(
                   color: Colors.blueGrey.shade500,
                   fontSize: 16,
