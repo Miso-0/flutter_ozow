@@ -16,12 +16,15 @@ class FlutterOzowController {
   final specialCharacters = ['&', '=', ';', ',', '?', '@', '+', '#', '%'];
   final void Function(int progress) onProgress;
   final void Function(UrlChange change) onUrlChange;
+  final void Function() onError;
   late final WebViewController _controller;
+  
 
   FlutterOzowController(
     this.widget, {
     required this.onProgress,
     required this.onUrlChange,
+    required this.onError,
   }) {
     _controller = _init();
   }
@@ -59,6 +62,7 @@ class FlutterOzowController {
             if (kDebugMode) {
               print('Flutter_ozow: Error loading page: ${error.description}');
             }
+            onError();
           },
         ),
       )
