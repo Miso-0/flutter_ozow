@@ -154,6 +154,9 @@ class _FlutterOzowState extends State<FlutterOzow> {
       onUrlChange: (UrlChange change) => handleUrlChange(
         change,
       ),
+      onError: () {
+        setStatus(OzowStatus.error);
+      },
     );
   }
 
