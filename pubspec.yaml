@@ -27,7 +27,7 @@ flutter:
     - packages/flutter_ozow/assets/tt.png
     - packages/flutter_ozow/assets/multiply.png
     - packages/flutter_ozow/assets/abandon.png
-    - packages/flutter_ozow/assets/loading_gif.png
+    - packages/flutter_ozow/assets/loading_gif.gif
     - packages/flutter_ozow/assets/success.png
     - packages/flutter_ozow/assets/expired.png
 
