@@ -1,3 +1,8 @@
+## 1.1.1
+
+* Added error handling for when there is no internet connection.
+* Replaced network images with local images.
+
 ## 1.1.0
 
 * Minor fixes and improvements, to make the plugin more stable.
