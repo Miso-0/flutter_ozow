@@ -1,3 +1,7 @@
+// Copyright 2023 UnderFlow SA
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
+
 enum OzowStatus {
   complete,
   cancelled,

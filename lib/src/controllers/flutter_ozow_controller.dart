@@ -1,3 +1,7 @@
+// Copyright 2023 UnderFlow SA
+// Use of this source code is governed by a MIT license that can be
+// found in the LICENSE file.
+
 // ignore_for_file: unused_element
 
 import 'dart:convert';
@@ -6,6 +10,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ozow/src/models/link_response.dart';
 import 'package:flutter_ozow/src/models/transaction.dart';
 import 'package:flutter_ozow/src/models/status.dart';
 import 'package:flutter_ozow/src/widgets/flutter_ozow.dart';
@@ -16,57 +21,72 @@ class FlutterOzowController {
   final specialCharacters = ['&', '=', ';', ',', '?', '@', '+', '#', '%'];
   final void Function(int progress) onProgress;
   final void Function(UrlChange change) onUrlChange;
-  final void Function() onError;
-  late final WebViewController _controller;
-  
+
+  ///s
+  final void Function(String errorMessage, WebResourceErrorType? errorType)
+      onError;
+  WebViewController? _controller;
 
   FlutterOzowController(
     this.widget, {
     required this.onProgress,
     required this.onUrlChange,
     required this.onError,
-  }) {
-    _controller = _init();
-  }
+  });
 
-  WebViewController get controller => _controller;
+  WebViewController? get controller => _controller;
 
   /// Initializes the controller.
-  WebViewController _init() {
-    //WidgetsBinding.instance.addPostFrameCallback((_) {
-    /// Check if the variables contain any invalid characters.
-    if (!_isValidVariables()) {
-      ///'&', '=', ';', ',', '?', '@', '+', '#', '%'
-      throw Exception(
-        'Flutter_ozow: Invalid characters in variables, your variables \nshould not contain any of the following characters: & = ; , ? @ + # %',
-      );
+  Future<void> initialize() async {
+    try {
+      ///generate the link
+      final link = await _generateLink();
+
+      print(link);
+
+      if (link == null) {
+        onError('flutter_ozow: Error generating link', null);
+        return;
+      }
+
+      ///initialize the controller
+      _controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setBackgroundColor(const Color(0x00000000))
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onProgress: (int progress) => onProgress(progress),
+            onUrlChange: (UrlChange change) => onUrlChange(change),
+            onPageStarted: (String url) {
+              if (kDebugMode) {
+                print(
+                    'flutter_application_3_dart_native: Page started loading');
+              }
+            },
+            onPageFinished: (String url) {
+              if (kDebugMode) {
+                print(
+                    'flutter_application_3_dart_native: Page finished loading');
+              }
+            },
+            onWebResourceError: (WebResourceError error) {
+              if (kDebugMode) {
+                print(
+                    'flutter_application_3_dart_native: Error loading page: ${error.description}');
+              }
+              onError(error.description, error.errorType);
+            },
+          ),
+        )
+        ..loadRequest(
+          Uri.parse(link),
+          method: LoadRequestMethod.post,
+          body: _generateContents2(),
+        );
+    } catch (e) {
+      onError('flutter_ozow: Error initializing controller', null);
+      return;
     }
-    return WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: (int progress) => onProgress(progress),
-          onUrlChange: (UrlChange change) => onUrlChange(change),
-          onPageStarted: (String url) {
-            if (kDebugMode) {
-              print('Flutter_ozow: Page started loading');
-            }
-          },
-          onPageFinished: (String url) {
-            if (kDebugMode) {
-              print('Flutter_ozow: Page finished loading');
-            }
-          },
-          onWebResourceError: (WebResourceError error) {
-            if (kDebugMode) {
-              print('Flutter_ozow: Error loading page: ${error.description}');
-            }
-            onError();
-          },
-        ),
-      )
-      ..loadRequest(_uri());
   }
 
   Future<({OzowStatus status, OzowTransaction? transaction})> decodeStatus(
@@ -120,7 +140,8 @@ class FlutterOzowController {
       return OzowTransaction.fromJson(data as Map<String, dynamic>);
     } catch (e) {
       if (kDebugMode) {
-        print('Flutter_ozow: Error getting transaction: $e');
+        print(
+            'flutter_application_3_dart_native: Error getting transaction: $e');
       }
       return null;
     }
@@ -209,12 +230,11 @@ class FlutterOzowController {
     widget.cancelUrl ??= widget.notifyUrl;
     widget.errorUrl ??= widget.notifyUrl;
 
-    var hashStr = '${widget.siteCode}'
-        'ZA'
-        'ZAR'
-        '${widget.amount}'
-        '${widget.transactionId}'
-        '${widget.bankRef}';
+    const countryCode = 'ZA';
+    const currencyCode = 'ZAR';
+
+    var hashStr =
+        '${widget.siteCode}$countryCode$currencyCode${widget.amount.toStringAsFixed(2)}${widget.transactionId}${widget.bankRef}';
 
     // Add optional fields if they are not null
     var optionalFields = [
@@ -232,10 +252,10 @@ class FlutterOzowController {
 
     // Add URL fields if they are not null
     var urlFields = [
-      widget.notifyUrl,
-      widget.successUrl,
+      widget.cancelUrl,
       widget.errorUrl,
-      widget.cancelUrl
+      widget.successUrl,
+      widget.notifyUrl
     ];
 
     for (var urlField in urlFields) {
@@ -245,17 +265,130 @@ class FlutterOzowController {
     }
 
     // Add isTest and privateKey at the end
-    hashStr += '$widget.isTest' '$widget.privateKey';
+    hashStr += '${widget.isTest}${widget.privateKey}';
 
     // Convert the above concatenated string to lowercase
     hashStr = hashStr.toLowerCase();
 
     // Generate a SHA512 hash of the lowercase concatenated string
     var bytes = utf8.encode(hashStr);
+
     // ignore: unused_local_variable
     var hash = sha512.convert(bytes);
 
     return hash.toString();
+  }
+
+  ///creates the body for the POST request
+  Map<String, dynamic> _body() {
+    ///The notification sometimes does not come through.
+    ///if the successUrl, cancelUrl and errorUrl are not set,
+    ///So we set them to the notifyUrl since receiving the notification is more important.
+    widget.successUrl ??= widget.notifyUrl;
+    widget.cancelUrl ??= widget.notifyUrl;
+    widget.errorUrl ??= widget.notifyUrl;
+    // Prepare the body of the POST request.
+    final body = {
+      'transactionReference': widget.transactionId.toString(),
+      'siteCode': widget.siteCode,
+      'countryCode': 'ZA',
+      'currencyCode': 'ZAR',
+      'amount': widget.amount.toStringAsFixed(2),
+      'bankReference': widget.bankRef,
+      'isTest': widget.isTest,
+      'cancelUrl': widget.cancelUrl,
+      'errorUrl': widget.errorUrl,
+      'successUrl': widget.successUrl,
+      'notifyUrl': widget.notifyUrl,
+      'hashCheck': _generateHash()
+    };
+
+    // Add optional fields if they are not null
+    var optionalFields = [
+      widget.optional1,
+      widget.optional2,
+      widget.optional3,
+      widget.optional4,
+      widget.optional5
+    ];
+    for (int i = 0; i < optionalFields.length; i++) {
+      if (optionalFields[i] != null) {
+        int count = i + 1;
+        body['optional$count'] = optionalFields[i];
+      }
+    }
+
+    return body;
+  }
+
+  /// Generates the link for the POST request.
+  ///
+  /// This is the link that the user will be redirected to.
+  Future<String?> _generateLink() async {
+    try {
+      final dio = Dio();
+
+      ///set the headers
+      dio.options.headers['ApiKey'] = widget.apiKey;
+      dio.options.headers['Content-Type'] = 'application/json';
+      dio.options.headers['Accept'] = 'application/json';
+
+      final json = jsonEncode(_body());
+
+      final res = await dio.post(
+        'https://api.ozow.com/postpaymentrequest',
+        data: json,
+      );
+
+      ///decode the response
+      final link = OzowLinkResponse.fromJson(res.data);
+
+      return link.url;
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      return null;
+    }
+  }
+
+  /// Constructs the URI and request body.
+  ///
+  /// This prepares the data needed for making the POST request.
+  Uint8List _generateContents2() {
+    ///The notification sometimes does not come through.
+    ///if the successUrl, cancelUrl and errorUrl are not set,
+    ///So we set them to the notifyUrl since receiving the notification is more important.
+    widget.successUrl ??= widget.notifyUrl;
+    widget.cancelUrl ??= widget.notifyUrl;
+    widget.errorUrl ??= widget.notifyUrl;
+
+    // Prepare the body of the POST request.
+    final body = {
+      'TransactionReference': widget.transactionId.toString(),
+      'SiteCode': widget.siteCode,
+      'CountryCode': 'ZA',
+      'CurrencyCode': 'ZAR',
+      'Amount': widget.amount.toStringAsFixed(2),
+      'BankReference': widget.bankRef,
+      'isTest': widget.isTest.toString(),
+      'CancelUrl': widget.cancelUrl,
+      'ErrorUrl': widget.errorUrl,
+      'SuccessUrl': widget.successUrl,
+      'NotifyUrl': widget.notifyUrl,
+      'Optional1': widget.optional1,
+      'Optional2': widget.optional2,
+      'Optional3': widget.optional3,
+      'Optional4': widget.optional4,
+      'Optional5': widget.optional5,
+      'IsTest': widget.isTest,
+      'HashCheck': _generateHash()
+    };
+
+    // Convert the body to a byte list.
+    final bodyList = Uint8List.fromList(utf8.encode(json.encode(body)));
+
+    return bodyList;
   }
 
   /// Constructs the URI and request body.

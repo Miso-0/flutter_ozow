@@ -1,14 +1,14 @@
-// Copyright 2023 Miso Menze
+// Copyright 2023 UnderFlow SA
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
-// import 'dart:convert';
+
 // ignore_for_file: must_be_immutable, unused_element
 
 import 'package:flutter/material.dart';
 import 'package:flutter_ozow/src/controllers/flutter_ozow_controller.dart';
 import 'package:flutter_ozow/src/models/status.dart';
-import 'package:flutter_ozow/src/widgets/flutter_ozow_status.dart';
 import 'package:flutter_ozow/src/widgets/flutter_ozow_loading_indicator.dart';
+import 'package:flutter_ozow/src/widgets/flutter_ozow_status.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../models/transaction.dart';
 import 'flutter_ozow_linear_loading_indicator.dart';
@@ -39,6 +39,7 @@ class FlutterOzow extends StatefulWidget {
     this.optional4,
     this.optional5,
     this.onComplete,
+    this.onError,
   });
 
   /// Put your desired width and height for the widget.
@@ -108,6 +109,8 @@ class FlutterOzow extends StatefulWidget {
 
   ///A callback function that is excuted when the transaction is complete
   final void Function(OzowTransaction?, OzowStatus)? onComplete;
+  final void Function(String errorMessage, WebResourceErrorType? errorType)?
+      onError;
 
   @override
   State<FlutterOzow> createState() => _FlutterOzowState();
@@ -154,10 +157,20 @@ class _FlutterOzowState extends State<FlutterOzow> {
       onUrlChange: (UrlChange change) => handleUrlChange(
         change,
       ),
-      onError: () {
-        setStatus(OzowStatus.error);
+      onError: (String errorMessage, WebResourceErrorType? errorType) {
+        if (widget.onError != null) {
+          widget.onError!(errorMessage, errorType);
+        }
       },
     );
+
+    _init();
+  }
+
+  Future<void> _init() async {
+    setLoading(true);
+    await ozowController.initialize();
+    setLoading(false);
   }
 
   @override
@@ -167,11 +180,10 @@ class _FlutterOzowState extends State<FlutterOzow> {
       children: [
         // Display a progress indicator with custom color.
         FlutterOzowLinearLoadingIndicator(progress: progress),
-
         // Show the WebViewWidget when both '_status' is null and '_isLoading' is false.
         // This implies that there is no current status and loading is complete.
-        if (_status == null && !_isLoading)
-          FlutterOzowWebView(ozowController: ozowController)
+        if (!_isLoading && ozowController.controller != null && _status == null)
+          FlutterOzowWebView(controller: ozowController.controller!)
 
         // Show a loading indicator when '_isLoading' is true.
         // This implies that some data or UI is being loaded.
@@ -181,7 +193,6 @@ class _FlutterOzowState extends State<FlutterOzow> {
         // Show FlutterOzowStatus when '_status' is not null.
         // This implies that there is a status to be displayed (e.g., error, success).
         else
-
           //if the onCompleteWidget is not null, call it
           //with the status of the transaction
           FlutterOzowStatus(status: _status!),

@@ -1,7 +1,7 @@
-// Copyright 2023 Miso Menze
+// Copyright 2023 UnderFlow SA
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
-// import 'dart:convert';
+
 // ignore_for_file: must_be_immutable, unused_element
 
 import 'package:flutter/material.dart';
