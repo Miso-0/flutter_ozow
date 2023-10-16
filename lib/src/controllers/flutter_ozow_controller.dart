@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 // ignore_for_file: unused_element
-
 import 'dart:convert';
-
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -300,6 +298,7 @@ class FlutterOzowController {
       'errorUrl': widget.errorUrl,
       'successUrl': widget.successUrl,
       'notifyUrl': widget.notifyUrl,
+      'SelectedBankId': widget.selectedBank.toString(),
       'hashCheck': _generateHash()
     };
 
