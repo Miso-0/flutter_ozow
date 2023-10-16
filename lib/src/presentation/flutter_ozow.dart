@@ -6,7 +6,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_ozow/src/controllers/flutter_ozow_controller.dart';
-import 'package:flutter_ozow/src/domain/banks.dart';
 import 'package:flutter_ozow/src/domain/status.dart';
 import 'package:flutter_ozow/src/presentation/flutter_ozow_loading_indicator.dart';
 import 'package:flutter_ozow/src/presentation/flutter_ozow_status.dart';
@@ -31,7 +30,7 @@ class FlutterOzow extends StatefulWidget {
     required this.amount,
     required this.isTest,
     required this.notifyUrl,
-    this.selectedBank,
+    // this.selectedBank,
     this.successUrl,
     this.errorUrl,
     this.cancelUrl,
@@ -76,7 +75,7 @@ class FlutterOzow extends StatefulWidget {
   final bool isTest;
 
   ///If there is a specific bank you want to use, you can specify it here.
-  final Banks? selectedBank;
+  // final Banks? selectedBank;
 
   ///URLs for various payment outcomes. Ozow sends notifications to these URLs.
   ///The URL that the notification result should be posted to.

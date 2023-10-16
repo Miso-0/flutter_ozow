@@ -298,7 +298,6 @@ class FlutterOzowController {
       'errorUrl': widget.errorUrl,
       'successUrl': widget.successUrl,
       'notifyUrl': widget.notifyUrl,
-      'SelectedBankId': widget.selectedBank.toString(),
       'hashCheck': _generateHash()
     };
 
