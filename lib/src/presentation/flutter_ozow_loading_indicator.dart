@@ -45,7 +45,7 @@ class FlutterOzowLoadingIndicator extends StatelessWidget {
               width: 250,
               padding: const EdgeInsets.only(left: 20, right: 20, top: 5),
               child: Text(
-                "Hold on while we verify your payment",
+                "Hold on while we process your payment.",
                 style: TextStyle(
                   color: Colors.blueGrey.shade500,
                   fontSize: 16,

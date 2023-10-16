@@ -10,10 +10,10 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ozow/src/models/link_response.dart';
-import 'package:flutter_ozow/src/models/transaction.dart';
-import 'package:flutter_ozow/src/models/status.dart';
-import 'package:flutter_ozow/src/widgets/flutter_ozow.dart';
+import 'package:flutter_ozow/src/domain/link_response.dart';
+import 'package:flutter_ozow/src/domain/transaction.dart';
+import 'package:flutter_ozow/src/domain/status.dart';
+import 'package:flutter_ozow/src/presentation/flutter_ozow.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class FlutterOzowController {

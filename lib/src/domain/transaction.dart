@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
-import 'package:flutter_ozow/src/models/status.dart';
+import 'package:flutter_ozow/src/domain/status.dart';
 
 class OzowTransaction {
   final String? transactionId;

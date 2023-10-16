@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:flutter_ozow/src/widgets/flutter_ozow.dart'; // import your library containing the FlutterOzow class
+import 'package:flutter_ozow/src/presentation/flutter_ozow.dart'; // import your library containing the FlutterOzow class
 
 void main() {
   testWidgets('FlutterOzow widget builds successfully',
