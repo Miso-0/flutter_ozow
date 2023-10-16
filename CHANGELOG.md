@@ -1,3 +1,7 @@
+## 1.1.2
+
+* Removed javascript dependency. making the plugin more stable.
+
 ## 1.1.1
 
 * Added error handling for when there is no internet connection.
