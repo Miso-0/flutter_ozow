@@ -6,11 +6,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_ozow/src/controllers/flutter_ozow_controller.dart';
-import 'package:flutter_ozow/src/domain/status.dart';
+import 'package:flutter_ozow/src/domain/ozow_status.dart';
+import 'package:flutter_ozow/src/domain/ozow_transaction.dart';
 import 'package:flutter_ozow/src/presentation/flutter_ozow_loading_indicator.dart';
 import 'package:flutter_ozow/src/presentation/flutter_ozow_status.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import '../domain/transaction.dart';
 import 'flutter_ozow_linear_loading_indicator.dart';
 import 'flutter_ozow_web_view.dart';
 

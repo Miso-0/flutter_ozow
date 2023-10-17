@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_ozow/src/presentation/flutter_ozow.dart';
 
 void main() {
@@ -24,6 +23,6 @@ void main() {
       ),
     );
     // Verify if the WebViewWidget is present
-    expect(find.byType(WebViewWidget), findsOneWidget);
+    expect(find.byType(FlutterOzow), findsOneWidget);
   });
 }

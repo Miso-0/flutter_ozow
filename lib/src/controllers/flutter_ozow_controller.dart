@@ -9,8 +9,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ozow/src/domain/link_response.dart';
-import 'package:flutter_ozow/src/domain/transaction.dart';
-import 'package:flutter_ozow/src/domain/status.dart';
+import 'package:flutter_ozow/src/domain/ozow_transaction.dart';
+import 'package:flutter_ozow/src/domain/ozow_status.dart';
 import 'package:flutter_ozow/src/presentation/flutter_ozow.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -39,9 +39,6 @@ class FlutterOzowController {
     try {
       ///generate the link
       final link = await _generateLink();
-
-      print(link);
-
       if (link == null) {
         onError('flutter_ozow: Error generating link', null);
         return;
@@ -79,7 +76,6 @@ class FlutterOzowController {
         ..loadRequest(
           Uri.parse(link),
           method: LoadRequestMethod.post,
-          body: _generateContents2(),
         );
     } catch (e) {
       onError('flutter_ozow: Error initializing controller', null);
@@ -87,6 +83,7 @@ class FlutterOzowController {
     }
   }
 
+  ///
   Future<({OzowStatus status, OzowTransaction? transaction})> decodeStatus(
       String status) async {
     final incomingStatus = ozowStatusFromStr(status);
@@ -148,6 +145,7 @@ class FlutterOzowController {
   /// Constructs the URI and request body.
   ///
   /// This prepares the data needed for making the POST request.
+  @Deprecated("")
   Uri _uri() {
     _setDefaultUrls();
     //the amount and transactionId are only passed through the
@@ -192,6 +190,8 @@ class FlutterOzowController {
   /// Checks if the variables contain any invalid characters.
   ///
   /// This may interfere with query parameters in the URL.
+
+  @Deprecated("")
   bool _isValidVariables() {
     List<String?> variables = [
       widget.transactionId.toString(),
@@ -353,6 +353,7 @@ class FlutterOzowController {
   /// Constructs the URI and request body.
   ///
   /// This prepares the data needed for making the POST request.
+  @Deprecated("")
   Uint8List _generateContents2() {
     ///The notification sometimes does not come through.
     ///if the successUrl, cancelUrl and errorUrl are not set,
@@ -392,6 +393,7 @@ class FlutterOzowController {
   /// Constructs the URI and request body.
   ///
   /// This prepares the data needed for making the POST request.
+  @Deprecated("")
   ({Uri uri, Uint8List body}) _generateContents() {
     ///The notification sometimes does not come through.
     ///if the successUrl, cancelUrl and errorUrl are not set,
