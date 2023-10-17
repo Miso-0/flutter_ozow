@@ -47,4 +47,3 @@ library flutter_ozow;
 export 'src/domain/ozow_status.dart';
 export 'src/domain/ozow_transaction.dart';
 export 'src/presentation/flutter_ozow.dart';
-
