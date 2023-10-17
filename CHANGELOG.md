@@ -1,3 +1,7 @@
+## 1.1.4
+
+* Minor fixes and improvements, to make the package more stable.
+
 ## 1.1.3
 
 * Minor fixes and improvements, to make the package more stable.
