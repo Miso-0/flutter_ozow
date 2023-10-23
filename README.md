@@ -64,6 +64,7 @@ FlutterOzow(
   apiKey:'your-ozow-api-key',
   amount: 50.00,
   isTest: true,
+  notifyUrl: 'your-notify-url'
   onComplete: (OzowTransaction? transaction, OzowStatus status) {
     //TODO: Something cool here    
   },
@@ -82,7 +83,7 @@ FlutterOzow(
 | apiKey        | Your Ozow API key. | Yes | String |
 | isTest        | Flag to indicate test transactions. | Yes | bool  |
 | onComplete    | Callback function for when the transaction is complete. | No  | Function(OzowTransaction?,OzowStatus)? |
-| notifyUrl     | URL for notifications. | No  | String? |
+| notifyUrl     | URL for notifications. | Yes  | String |
 | successUrl    | URL for successful payments. | No  | String? |
 | errorUrl      | URL for failed payments. | No  | String? |
 | cancelUrl     | URL for cancelled payments. | No  | String? |
