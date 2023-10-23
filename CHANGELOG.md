@@ -1,3 +1,9 @@
+## 1.1.5
+
+* Minor fixes and improvements.
+* Fixed documentation.
+* Support for flutter  3.13.8.
+
 ## 1.1.4
 
 * Minor fixes and improvements, to make the package more stable.
