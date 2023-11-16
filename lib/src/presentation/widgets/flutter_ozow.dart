@@ -1,15 +1,13 @@
 // Copyright 2023 UnderFlow SA
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
-
-// ignore_for_file: must_be_immutable, unused_element
-
 import 'package:flutter/material.dart';
-import 'package:flutter_ozow/src/controllers/flutter_ozow_controller.dart';
-import 'package:flutter_ozow/src/domain/ozow_status.dart';
-import 'package:flutter_ozow/src/domain/ozow_transaction.dart';
-import 'package:flutter_ozow/src/presentation/flutter_ozow_loading_indicator.dart';
-import 'package:flutter_ozow/src/presentation/flutter_ozow_status.dart';
+import 'package:flutter_ozow/src/domain/entities/ozow_payment.dart';
+import 'package:flutter_ozow/src/domain/entities/ozow_status.dart';
+import 'package:flutter_ozow/src/domain/entities/ozow_transaction.dart';
+import 'package:flutter_ozow/src/presentation/controllers/flutter_ozow_controller.dart';
+import 'package:flutter_ozow/src/presentation/widgets/flutter_ozow_loading_indicator.dart';
+import 'package:flutter_ozow/src/presentation/widgets/flutter_ozow_status.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'flutter_ozow_linear_loading_indicator.dart';
 import 'flutter_ozow_web_view.dart';
@@ -19,6 +17,7 @@ import 'flutter_ozow_web_view.dart';
 /// This widget utilizes [webview_flutter] to render a web page that assists
 /// with completing payments via the Ozow payment gateway.
 /// More information can be found at https://ozow.com.
+// ignore: must_be_immutable
 class FlutterOzow extends StatefulWidget {
   FlutterOzow({
     super.key,
@@ -30,7 +29,6 @@ class FlutterOzow extends StatefulWidget {
     required this.amount,
     required this.isTest,
     required this.notifyUrl,
-    // this.selectedBank,
     this.successUrl,
     this.errorUrl,
     this.cancelUrl,
@@ -150,9 +148,28 @@ class _FlutterOzowState extends State<FlutterOzow> {
   void initState() {
     super.initState();
 
+    final payment = OzowPayment(
+      transactionId: widget.transactionId,
+      siteCode: widget.siteCode,
+      privateKey: widget.privateKey,
+      apiKey: widget.apiKey,
+      bankRef: widget.bankRef,
+      amount: widget.amount,
+      isTest: widget.isTest,
+      notifyUrl: widget.notifyUrl,
+      successUrl: widget.successUrl,
+      cancelUrl: widget.cancelUrl,
+      errorUrl: widget.errorUrl,
+      optional1: widget.optional1,
+      optional2: widget.optional2,
+      optional3: widget.optional3,
+      optional4: widget.optional4,
+      optional5: widget.optional5,
+    );
+
     ///initialize the controller
     ozowController = FlutterOzowController(
-      widget,
+      payment: payment,
       onProgress: (int progress) {
         setState(() {
           this.progress = progress;
@@ -161,7 +178,7 @@ class _FlutterOzowState extends State<FlutterOzow> {
       onUrlChange: (UrlChange change) => handleUrlChange(
         change,
       ),
-      onError: (String errorMessage, WebResourceErrorType? errorType) {
+      onError: (status, errorMessage, errorType) {
         if (widget.onError != null) {
           widget.onError!(errorMessage, errorType);
         }
@@ -219,18 +236,31 @@ class _FlutterOzowState extends State<FlutterOzow> {
 
       ///verify the status of the transaction
       setLoading(true);
-      final res = await ozowController.decodeStatus(status);
+      final res = await ozowController.repository.verifyPayment(status);
       setLoading(false);
 
-      ///update the status of the transaction
-      ///to update the UI
-      setStatus(res.status);
+      res.fold((status) {
+        widget.onError!(
+          'flutter_ozow: Error verifying payment',
+          null,
+        );
+        setStatus(status);
+      }, (transaction) {
+        ///update the status of the transaction
+        ///to update the UI
+        setStatus(
+          transaction.verifiedStatus,
+        );
 
-      ///if the onComplete callback is not null, call it
-      ///with the status of the transaction
-      if (widget.onComplete != null) {
-        widget.onComplete!(res.transaction, res.status);
-      }
+        ///if the onComplete callback is not null, call it
+        ///with the status of the transaction
+        if (widget.onComplete != null) {
+          widget.onComplete!(
+            transaction,
+            transaction.verifiedStatus,
+          );
+        }
+      });
     }
   }
 }

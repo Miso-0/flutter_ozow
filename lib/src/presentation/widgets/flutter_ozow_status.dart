@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_ozow/src/domain/ozow_status.dart';
+import 'package:flutter_ozow/src/domain/entities/ozow_status.dart';
 
 /// The `FlutterOzowStatus` widget displays the status of the payment.
 ///
