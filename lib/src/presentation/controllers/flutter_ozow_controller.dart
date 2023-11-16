@@ -28,7 +28,7 @@ class FlutterOzowController {
     required this.onUrlChange,
     required this.onError,
   }) : _repository = OzowRepository(
-          dataSource: OzowApi(),
+          dataSource: OzowApiDataSource(),
           payment: payment,
         );
 

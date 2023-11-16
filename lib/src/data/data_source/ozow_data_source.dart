@@ -23,7 +23,7 @@ abstract class IOzowDataSource {
   });
 }
 
-class OzowApi implements IOzowDataSource {
+class OzowApiDataSource implements IOzowDataSource {
   @override
   Future<String?> generateLink({
     required Map<String, dynamic> payment,

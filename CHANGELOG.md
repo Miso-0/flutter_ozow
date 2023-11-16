@@ -1,3 +1,7 @@
+## 1.1.6
+* Minor fixes and improvements.
+* Support for flutter  3.16.0.
+
 ## 1.1.5
 
 * Minor fixes and improvements.

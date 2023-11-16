@@ -79,6 +79,7 @@ class _PaymmentHandlerWidgetState extends ConsumerState<PaymmentHandlerWidget> {
               optional3: type.toString(),
               optional4: type.toString(),
               optional5: type.toString(),
+              apiKey: '',
             );
           case TransactionStatus.failed:
             return const Center(child: Text('Transaction failed'));
