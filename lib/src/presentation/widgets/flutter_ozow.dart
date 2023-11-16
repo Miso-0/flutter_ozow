@@ -240,10 +240,12 @@ class _FlutterOzowState extends State<FlutterOzow> {
       setLoading(false);
 
       res.fold((status) {
-        widget.onError!(
-          'flutter_ozow: Error verifying payment',
-          null,
-        );
+        if (widget.onError != null) {
+          widget.onError!(
+            'flutter_ozow: Error verifying payment',
+            null,
+          );
+        }
         setStatus(status);
       }, (transaction) {
         ///update the status of the transaction
