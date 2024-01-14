@@ -35,6 +35,20 @@ flutter:
     - packages/flutter_ozow/assets/success.png
     - packages/flutter_ozow/assets/expired.png
 
-    
-
-
+topics:
+  - payment
+  - ozow
+  - flutter
+  - payment-gateway
+  - payment-integration
+  - payment-processing
+  - payment-processing-gateway
+  - stripe
+  - paypal
+  - flutter-plugin
+  - flutter-package
+  - flutter ozow
+  - ozow flutter
+  - ozow payment
+  - ozow payment gateway
+  - online payment

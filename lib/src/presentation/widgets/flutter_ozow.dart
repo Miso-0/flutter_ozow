@@ -213,10 +213,10 @@ class _FlutterOzowState extends State<FlutterOzow> {
 
         // Show FlutterOzowStatus when '_status' is not null.
         // This implies that there is a status to be displayed (e.g., error, success).
-        else
+        else 
           //if the onCompleteWidget is not null, call it
           //with the status of the transaction
-          FlutterOzowStatus(status: _status!),
+          FlutterOzowStatus(status: _status),
       ],
     );
   }

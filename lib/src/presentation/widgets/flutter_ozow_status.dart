@@ -9,7 +9,7 @@ import 'package:flutter_ozow/src/domain/entities/ozow_status.dart';
 ///
 class FlutterOzowStatus extends StatelessWidget {
   const FlutterOzowStatus({super.key, required this.status});
-  final OzowStatus status;
+  final OzowStatus? status;
 
   @override
   Widget build(BuildContext context) {

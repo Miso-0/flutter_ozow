@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_ozow/src/data/data_source/ozow_data_source.dart';
 import 'package:flutter_ozow/src/domain/entities/ozow_payment.dart';
 import 'package:flutter_ozow/src/domain/entities/ozow_status.dart';
@@ -20,16 +21,29 @@ class OzowRepository {
   /// Generates the payment link.
   ///
   Future<Either<OzowStatus, String>> generateLink() async {
+    if (kDebugMode) {
+      print('map: ${_paymentMap()}');
+    }
+    
     final link = await _dataSource.generateLink(
       payment: _paymentMap(),
       apiKey: _payment.apiKey,
     );
 
-    if (link == null) {
+    return link.fold((l) {
+      if (kDebugMode) {
+        print(l.toString());
+      }
       return const Left(OzowStatus.error);
-    }
-
-    return Right(link);
+    }, (r) {
+      if (r == null) {
+        if (kDebugMode) {
+          print('flutter_ozow: Error generating link {link is null}');
+        }
+        return const Left(OzowStatus.error);
+      }
+      return Right(r);
+    });
   }
 
   /// Verifies the payment status.

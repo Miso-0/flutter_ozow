@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ozow/flutter_ozow.dart';
@@ -28,7 +29,7 @@ class FlutterOzowController {
     required this.onUrlChange,
     required this.onError,
   }) : _repository = OzowRepository(
-          dataSource: OzowApiDataSource(),
+          dataSource: OzowApiDataSource(dio: Dio()),
           payment: payment,
         );
 
