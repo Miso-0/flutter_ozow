@@ -24,7 +24,7 @@ class OzowRepository {
     if (kDebugMode) {
       print('map: ${_paymentMap()}');
     }
-    
+
     final link = await _dataSource.generateLink(
       payment: _paymentMap(),
       apiKey: _payment.apiKey,
@@ -84,6 +84,8 @@ class OzowRepository {
     return Right(transaction);
   }
 
+  String idNumber = '0106216335088';
+
   /// Generates the hash for the POST request.
   String _generateHash() {
     _payment.successUrl ??= _payment.notifyUrl;
@@ -94,7 +96,7 @@ class OzowRepository {
     const currencyCode = 'ZAR';
 
     var hashStr =
-        '${_payment.siteCode}$countryCode$currencyCode${_payment.amount.toStringAsFixed(2)}${_payment.transactionId}${_payment.bankRef}';
+        '${_payment.siteCode}$countryCode$currencyCode${_payment.amount.toStringAsFixed(2)}${_payment.transactionId}${_payment.bankRef}$idNumber';
 
     // Add optional fields if they are not null
     var optionalFields = [
@@ -160,7 +162,8 @@ class OzowRepository {
       'errorUrl': _payment.errorUrl,
       'successUrl': _payment.successUrl,
       'notifyUrl': _payment.notifyUrl,
-      'hashCheck': _generateHash()
+      'hashCheck': _generateHash(),
+      'CustomerIdentifier': idNumber
     };
 
     // Add optional fields if they are not null

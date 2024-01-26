@@ -83,7 +83,7 @@ class OzowApiDataSource implements IOzowDataSource {
     } catch (e) {
       if (kDebugMode) {
         print(
-          'flutter_application_3_dart_native: Error getting transaction: $e',
+          'Flutter ozow: Error getting transaction: $e',
         );
       }
       return null;
