@@ -160,7 +160,7 @@ class OzowRepository {
       'successUrl': _payment.successUrl,
       'notifyUrl': _payment.notifyUrl,
       'isTest': _payment.isTest,
-      'hashCheck': _generateHash(),
+      'hashCheck': _generateHash()
     };
 
     // Add optional fields if they are not null
