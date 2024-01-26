@@ -162,8 +162,8 @@ class OzowRepository {
       'errorUrl': _payment.errorUrl,
       'successUrl': _payment.successUrl,
       'notifyUrl': _payment.notifyUrl,
-      'hashCheck': _generateHash(),
-      'CustomerIdentifier': idNumber
+      'customerIdentifier': idNumber,
+      'hashCheck': _generateHash()
     };
 
     // Add optional fields if they are not null
