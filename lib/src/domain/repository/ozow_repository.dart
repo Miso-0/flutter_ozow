@@ -84,8 +84,6 @@ class OzowRepository {
     return Right(transaction);
   }
 
-  final String idNumber = '0106216335088';
-
   /// Generates the hash for the POST request.
   String _generateHash() {
     _payment.successUrl ??= _payment.notifyUrl;
@@ -95,8 +93,8 @@ class OzowRepository {
     const countryCode = 'ZA';
     const currencyCode = 'ZAR';
 
-    var hashStr =
-        '${_payment.siteCode}$countryCode$currencyCode${_payment.amount.toStringAsFixed(2)}${_payment.transactionId}${_payment.bankRef}';
+    var hashStr = '${_payment.siteCode}$countryCode$currencyCode'
+        '${_payment.amount.toStringAsFixed(2)}${_payment.transactionId}${_payment.bankRef}';
 
     // Add optional fields if they are not null
     var optionalFields = [
@@ -127,7 +125,7 @@ class OzowRepository {
     }
 
     // Add isTest and privateKey at the end
-    hashStr += '${_payment.isTest}${_payment.privateKey}$idNumber';
+    hashStr += '${_payment.isTest}${_payment.privateKey}';
 
     // Convert the above concatenated string to lowercase
     hashStr = hashStr.toLowerCase();
@@ -157,13 +155,12 @@ class OzowRepository {
       'currencyCode': 'ZAR',
       'amount': _payment.amount.toStringAsFixed(2),
       'bankReference': _payment.bankRef,
+      'isTest': _payment.isTest,
       'cancelUrl': _payment.cancelUrl,
       'errorUrl': _payment.errorUrl,
       'successUrl': _payment.successUrl,
       'notifyUrl': _payment.notifyUrl,
-      'CustomerIdentifier': idNumber,
-      'isTest': _payment.isTest,
-      'hashCheck': _generateHash(),
+      'hashCheck': _generateHash()
     };
 
     // Add optional fields if they are not null
