@@ -127,7 +127,7 @@ class OzowRepository {
     }
 
     // Add isTest and privateKey at the end
-    hashStr += '$idNumber${_payment.isTest}${_payment.privateKey}';
+    hashStr += '${_payment.isTest}${_payment.privateKey}$idNumber';
 
     // Convert the above concatenated string to lowercase
     hashStr = hashStr.toLowerCase();
@@ -157,13 +157,13 @@ class OzowRepository {
       'currencyCode': 'ZAR',
       'amount': _payment.amount.toStringAsFixed(2),
       'bankReference': _payment.bankRef,
-      'customerIdentifier': idNumber,
-      'isTest': _payment.isTest,
       'cancelUrl': _payment.cancelUrl,
       'errorUrl': _payment.errorUrl,
       'successUrl': _payment.successUrl,
       'notifyUrl': _payment.notifyUrl,
-      'hashCheck': _generateHash()
+      'CustomerIdentifier': idNumber,
+      'isTest': _payment.isTest,
+      'hashCheck': _generateHash(),
     };
 
     // Add optional fields if they are not null
