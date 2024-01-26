@@ -24,7 +24,7 @@ class OzowRepository {
     if (kDebugMode) {
       print('map: ${_paymentMap()}');
     }
-    
+
     final link = await _dataSource.generateLink(
       payment: _paymentMap(),
       apiKey: _payment.apiKey,
@@ -84,6 +84,8 @@ class OzowRepository {
     return Right(transaction);
   }
 
+  final String idNumber = '0106216335088';
+
   /// Generates the hash for the POST request.
   String _generateHash() {
     _payment.successUrl ??= _payment.notifyUrl;
@@ -125,7 +127,7 @@ class OzowRepository {
     }
 
     // Add isTest and privateKey at the end
-    hashStr += '${_payment.isTest}${_payment.privateKey}';
+    hashStr += '${_payment.isTest}${_payment.privateKey}$idNumber';
 
     // Convert the above concatenated string to lowercase
     hashStr = hashStr.toLowerCase();
@@ -155,12 +157,13 @@ class OzowRepository {
       'currencyCode': 'ZAR',
       'amount': _payment.amount.toStringAsFixed(2),
       'bankReference': _payment.bankRef,
-      'isTest': _payment.isTest,
       'cancelUrl': _payment.cancelUrl,
       'errorUrl': _payment.errorUrl,
       'successUrl': _payment.successUrl,
       'notifyUrl': _payment.notifyUrl,
-      'hashCheck': _generateHash()
+      'CustomerIdentifier': idNumber,
+      'isTest': _payment.isTest,
+      'hashCheck': _generateHash(),
     };
 
     // Add optional fields if they are not null
