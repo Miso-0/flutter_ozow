@@ -84,8 +84,6 @@ class OzowRepository {
     return Right(transaction);
   }
 
-  final String idNumber = '0106216335088';
-
   /// Generates the hash for the POST request.
   String _generateHash() {
     _payment.successUrl ??= _payment.notifyUrl;
@@ -127,7 +125,7 @@ class OzowRepository {
     }
 
     // Add isTest and privateKey at the end
-    hashStr += '${_payment.isTest}${_payment.privateKey}$idNumber';
+    hashStr += '${_payment.isTest}${_payment.privateKey}';
 
     // Convert the above concatenated string to lowercase
     hashStr = hashStr.toLowerCase();
@@ -161,7 +159,6 @@ class OzowRepository {
       'errorUrl': _payment.errorUrl,
       'successUrl': _payment.successUrl,
       'notifyUrl': _payment.notifyUrl,
-      'CustomerIdentifier': idNumber,
       'isTest': _payment.isTest,
       'hashCheck': _generateHash(),
     };
