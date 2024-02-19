@@ -11,17 +11,17 @@ environment:
 dependencies:
   crypto: ^3.0.3
   dartz: ^0.10.1
-  dio: ^5.3.3
+  dio: ^5.4.1
   flutter:
     sdk: flutter
-  webview_flutter: ^4.4.2
+  webview_flutter: ^4.7.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.1
-  mockito: ^5.4.2
-  build_runner: ^2.4.6
+  mockito: ^5.4.4
+  build_runner: ^2.4.8
 
 
 flutter:
@@ -35,20 +35,9 @@ flutter:
     - packages/flutter_ozow/assets/success.png
     - packages/flutter_ozow/assets/expired.png
 
-topics:
-  - payment
-  - ozow
-  - flutter
-  - payment-gateway
-  - payment-integration
-  - payment-processing
-  - payment-processing-gateway
-  - stripe
-  - paypal
-  - flutter-plugin
-  - flutter-package
-  - flutter ozow
-  - ozow flutter
-  - ozow payment
-  - ozow payment gateway
-  - online payment
+  topics:
+    - payment
+    - ozow
+    - payment-integration
+    - stripe
+    - paypal
