@@ -125,7 +125,8 @@ class OzowRepository {
     }
 
     // Add isTest and privateKey at the end
-    hashStr += '${_payment.isTest}${_payment.privateKey}';
+    hashStr +=
+        '${_payment.isTest}${_payment.selectedBank}${_payment.privateKey}';
 
     // Convert the above concatenated string to lowercase
     hashStr = hashStr.toLowerCase();
@@ -155,11 +156,12 @@ class OzowRepository {
       'currencyCode': 'ZAR',
       'amount': _payment.amount.toStringAsFixed(2),
       'bankReference': _payment.bankRef,
-      'isTest': _payment.isTest,
       'cancelUrl': _payment.cancelUrl,
       'errorUrl': _payment.errorUrl,
       'successUrl': _payment.successUrl,
       'notifyUrl': _payment.notifyUrl,
+      'isTest': _payment.isTest,
+      'selectedBankId': _payment.selectedBank,
       'hashCheck': _generateHash()
     };
 

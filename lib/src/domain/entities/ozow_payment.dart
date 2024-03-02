@@ -12,6 +12,7 @@ class OzowPayment {
   final String? optional4;
   final String? optional5;
   final String notifyUrl;
+  final String selectedBank;
   String? successUrl;
   String? cancelUrl;
   String? errorUrl;
@@ -25,6 +26,7 @@ class OzowPayment {
     required this.amount,
     required this.isTest,
     required this.notifyUrl,
+    required this.selectedBank,
     this.successUrl,
     this.cancelUrl,
     this.errorUrl,
@@ -35,26 +37,26 @@ class OzowPayment {
     this.optional5,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'transactionId': transactionId,
-      'siteCode': siteCode,
-      'privateKey': privateKey,
-      'apiKey': apiKey,
-      'bankRef': bankRef,
-      'amount': amount,
-      'isTest': isTest,
-      'notifyUrl': notifyUrl,
-      'successUrl': successUrl,
-      'cancelUrl': cancelUrl,
-      'errorUrl': errorUrl,
-      'optional1': optional1,
-      'optional2': optional2,
-      'optional3': optional3,
-      'optional4': optional4,
-      'optional5': optional5,
-    };
-  }
+  // Map<String, dynamic> toMap() {
+  //   return {
+  //     'transactionId': transactionId,
+  //     'siteCode': siteCode,
+  //     'privateKey': privateKey,
+  //     'apiKey': apiKey,
+  //     'bankRef': bankRef,
+  //     'amount': amount,
+  //     'isTest': isTest,
+  //     'notifyUrl': notifyUrl,
+  //     'successUrl': successUrl,
+  //     'cancelUrl': cancelUrl,
+  //     'errorUrl': errorUrl,
+  //     'optional1': optional1,
+  //     'optional2': optional2,
+  //     'optional3': optional3,
+  //     'optional4': optional4,
+  //     'optional5': optional5,
+  //   };
+  // }
 
   ///Override operator ==
   @override
@@ -69,6 +71,7 @@ class OzowPayment {
         bankRef == other.bankRef &&
         amount == other.amount &&
         isTest == other.isTest &&
+        selectedBank == other.selectedBank &&
         notifyUrl == other.notifyUrl &&
         successUrl == other.successUrl &&
         cancelUrl == other.cancelUrl &&
@@ -89,6 +92,7 @@ class OzowPayment {
       bankRef.hashCode ^
       amount.hashCode ^
       isTest.hashCode ^
+      selectedBank.hashCode ^
       notifyUrl.hashCode ^
       successUrl.hashCode ^
       cancelUrl.hashCode ^

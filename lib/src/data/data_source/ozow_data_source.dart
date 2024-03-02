@@ -49,6 +49,9 @@ class OzowApiDataSource implements IOzowDataSource {
         data: json,
       );
 
+      print(res.data);
+      print(res.statusCode);
+
       ///decode the response
       final link = OzowLinkModel.fromJson(res.data);
 

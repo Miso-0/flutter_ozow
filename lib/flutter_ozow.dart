@@ -43,7 +43,8 @@
 library flutter_ozow;
 
 // Exports the main widget
-// export 'src/domain/banks.dart';
+export 'src/domain/entities/banks.dart';
 export 'src/domain/entities/ozow_status.dart';
 export 'src/domain/entities/ozow_transaction.dart';
 export 'src/presentation/widgets/flutter_ozow.dart';
+export 'src/presentation/widgets/flutter_ozow_select_bank.dart';

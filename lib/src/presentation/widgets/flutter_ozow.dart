@@ -29,6 +29,7 @@ class FlutterOzow extends StatefulWidget {
     required this.amount,
     required this.isTest,
     required this.notifyUrl,
+    required this.selectedBank,
     this.successUrl,
     this.errorUrl,
     this.cancelUrl,
@@ -44,6 +45,8 @@ class FlutterOzow extends StatefulWidget {
   /// Put your desired width and height for the widget.
   // final double? width;
   // final double? height;
+
+  final String selectedBank;
 
   /// Unique transaction ID or order number generated from your backend.
   ///
@@ -156,6 +159,7 @@ class _FlutterOzowState extends State<FlutterOzow> {
       bankRef: widget.bankRef,
       amount: widget.amount,
       isTest: widget.isTest,
+      selectedBank: widget.selectedBank,
       notifyUrl: widget.notifyUrl,
       successUrl: widget.successUrl,
       cancelUrl: widget.cancelUrl,
@@ -213,7 +217,7 @@ class _FlutterOzowState extends State<FlutterOzow> {
 
         // Show FlutterOzowStatus when '_status' is not null.
         // This implies that there is a status to be displayed (e.g., error, success).
-        else 
+        else
           //if the onCompleteWidget is not null, call it
           //with the status of the transaction
           FlutterOzowStatus(status: _status),

@@ -16,6 +16,7 @@ void main() {
   setUp(() {
     mockOzowDataSource = MockOzowApiDataSource();
     payment = OzowPayment(
+      selectedBank: 'selectedBank',
       transactionId: 1000,
       siteCode: 'siteCode',
       privateKey: 'privateKey',
