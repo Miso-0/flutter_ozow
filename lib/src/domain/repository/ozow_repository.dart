@@ -94,7 +94,7 @@ class OzowRepository {
     const currencyCode = 'ZAR';
 
     var hashStr = '${_payment.siteCode}$countryCode$currencyCode'
-        '${_payment.amount.toStringAsFixed(2)}${_payment.transactionId}${_payment.bankRef}${_payment.customerIdNumber??''}';
+        '${_payment.amount.toStringAsFixed(2)}${_payment.transactionId}${_payment.bankRef}';
 
     // Add optional fields if they are not null
     var optionalFields = [
@@ -122,6 +122,10 @@ class OzowRepository {
       if (urlField != null) {
         hashStr += urlField;
       }
+    }
+
+    if (_payment.customerIdNumber != null) {
+      hashStr += _payment.customerIdNumber.toString();
     }
 
     // Add isTest and privateKey at the end
@@ -156,7 +160,6 @@ class OzowRepository {
       'amount': _payment.amount.toStringAsFixed(2),
       'bankReference': _payment.bankRef,
       'isTest': _payment.isTest,
-      'customerIdentifier': _payment.customerIdNumber,
       'cancelUrl': _payment.cancelUrl,
       'errorUrl': _payment.errorUrl,
       'successUrl': _payment.successUrl,
@@ -177,6 +180,10 @@ class OzowRepository {
         int count = i + 1;
         body['optional$count'] = optionalFields[i];
       }
+    }
+
+    if (_payment.customerIdNumber != null) {
+      body['customerIdentifier'] = _payment.customerIdNumber;
     }
 
     return body;

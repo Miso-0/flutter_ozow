@@ -45,9 +45,13 @@ class OzowApiDataSource implements IOzowDataSource {
       final json = jsonEncode(payment);
 
       final res = await _dio.post(
-        'https://api.ozow.com/postpaymentrequest',
+        //'https://api.ozow.com/postpaymentrequest',
+        'https://stagingapi.ozow.com/PostPaymentRequest',
         data: json,
       );
+
+      print(res.data);
+      print(res.statusCode);
 
       ///decode the response
       final link = OzowLinkModel.fromJson(res.data);

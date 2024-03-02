@@ -29,6 +29,7 @@ class FlutterOzow extends StatefulWidget {
     required this.amount,
     required this.isTest,
     required this.notifyUrl,
+    required this.customerIdNumber,
     this.successUrl,
     this.errorUrl,
     this.cancelUrl,
@@ -62,6 +63,8 @@ class FlutterOzow extends StatefulWidget {
 
   ///
   final String apiKey;
+
+  final String? customerIdNumber;
 
   /// Reference string that will appear on the user's bank statement.
   final String bankRef;
@@ -156,6 +159,7 @@ class _FlutterOzowState extends State<FlutterOzow> {
       bankRef: widget.bankRef,
       amount: widget.amount,
       isTest: widget.isTest,
+      customerIdNumber: widget.customerIdNumber,
       notifyUrl: widget.notifyUrl,
       successUrl: widget.successUrl,
       cancelUrl: widget.cancelUrl,
