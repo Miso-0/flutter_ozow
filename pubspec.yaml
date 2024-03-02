@@ -35,9 +35,9 @@ flutter:
     - packages/flutter_ozow/assets/success.png
     - packages/flutter_ozow/assets/expired.png
 
-  topics:
-    - payment
-    - ozow
-    - payment-integration
-    - stripe
-    - paypal
+  # topics:
+  #   - payment
+  #   - ozow
+  #   - payment
+  #   - stripe
+  #   - paypal
