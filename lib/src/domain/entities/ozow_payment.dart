@@ -6,6 +6,7 @@ class OzowPayment {
   final String bankRef;
   final double amount;
   final bool isTest;
+  final String? customerIdNumber;
   final String? optional1;
   final String? optional2;
   final String? optional3;
@@ -25,6 +26,7 @@ class OzowPayment {
     required this.amount,
     required this.isTest,
     required this.notifyUrl,
+    this.customerIdNumber,
     this.successUrl,
     this.cancelUrl,
     this.errorUrl,
@@ -43,6 +45,7 @@ class OzowPayment {
       'apiKey': apiKey,
       'bankRef': bankRef,
       'amount': amount,
+      'customerIdentifier':customerIdNumber,
       'isTest': isTest,
       'notifyUrl': notifyUrl,
       'successUrl': successUrl,
@@ -69,6 +72,7 @@ class OzowPayment {
         bankRef == other.bankRef &&
         amount == other.amount &&
         isTest == other.isTest &&
+        customerIdNumber == other.customerIdNumber &&
         notifyUrl == other.notifyUrl &&
         successUrl == other.successUrl &&
         cancelUrl == other.cancelUrl &&
@@ -89,6 +93,7 @@ class OzowPayment {
       bankRef.hashCode ^
       amount.hashCode ^
       isTest.hashCode ^
+      customerIdNumber.hashCode ^
       notifyUrl.hashCode ^
       successUrl.hashCode ^
       cancelUrl.hashCode ^
