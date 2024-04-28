@@ -42,6 +42,6 @@ platforms:
 topics:
   - payment
   - ozow
-  - payment
+  - paystack
   - stripe
   - paypal
