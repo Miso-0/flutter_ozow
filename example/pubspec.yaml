@@ -14,7 +14,8 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   flutter_riverpod: ^2.4.0
-  flutter_ozow: ^1.0.3
+  flutter_ozow:
+    path: ../../flutter_ozow
 
 
 dev_dependencies:

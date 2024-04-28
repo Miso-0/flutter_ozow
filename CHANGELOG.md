@@ -1,4 +1,10 @@
+
+## 1.1.7
+
+* updated depandancies
+
 ## 1.1.6
+
 * Minor fixes and improvements.
 * Support for flutter  3.16.0.
 

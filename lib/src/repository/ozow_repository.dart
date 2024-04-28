@@ -1,21 +1,20 @@
 import 'dart:convert';
-
 import 'package:crypto/crypto.dart';
-import 'package:dartz/dartz.dart';
+import 'package:either_dart/either.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_ozow/src/data/data_source/ozow_data_source.dart';
-import 'package:flutter_ozow/src/domain/entities/ozow_payment.dart';
-import 'package:flutter_ozow/src/domain/entities/ozow_status.dart';
-import 'package:flutter_ozow/src/domain/entities/ozow_transaction.dart';
+import 'package:flutter_ozow/src/data/providers/ozow_data_provider.dart';
+import 'package:flutter_ozow/src/data/models/ozow_payment.dart';
+import 'package:flutter_ozow/src/data/models/ozow_status.dart';
+import 'package:flutter_ozow/src/data/models/ozow_transaction.dart';
 
 class OzowRepository {
-  final IOzowDataSource _dataSource;
+  final OzowDataProvider _dataProvider;
   final OzowPayment _payment;
 
   OzowRepository({
-    required IOzowDataSource dataSource,
+    required OzowDataProvider dataProvider,
     required OzowPayment payment,
-  })  : _dataSource = dataSource,
+  })  : _dataProvider = dataProvider,
         _payment = payment;
 
   /// Generates the payment link.
@@ -25,11 +24,10 @@ class OzowRepository {
       print('map: ${_paymentMap()}');
     }
 
-    final link = await _dataSource.generateLink(
+    final link = await _dataProvider.generatePaymentLink(
       payment: _paymentMap(),
       apiKey: _payment.apiKey,
     );
-
     return link.fold((l) {
       if (kDebugMode) {
         print(l.toString());
@@ -38,7 +36,7 @@ class OzowRepository {
     }, (r) {
       if (r == null) {
         if (kDebugMode) {
-          print('flutter_ozow: Error generating link {link is null}');
+          print('flutter_ozow -> repo: Error generating link {link is null}');
         }
         return const Left(OzowStatus.error);
       }
@@ -62,7 +60,7 @@ class OzowRepository {
 
     ///we only need to verify the status if it is complete
     ///This is to ensure that ozow is aware of this transaction
-    final transactionModel = await _dataSource.getOzowTransaction(
+    final transaction = await _dataProvider.fetchTransaction(
       transactionId: _payment.transactionId.toString(),
       siteCode: _payment.siteCode,
       apiKey: _payment.apiKey,
@@ -72,12 +70,9 @@ class OzowRepository {
     ///if the transaction is null, it means that the transaction
     ///does not exist on Ozow or there was an error getting the transaction
     ///
-    if (transactionModel == null) {
+    if (transaction == null) {
       return const Left(OzowStatus.error);
     }
-
-    ///convert the transaction model to a transaction entity
-    final transaction = OzowTransaction.fromModel(transactionModel);
 
     ///return the actual status of the transaction
     ///from Ozow
@@ -89,7 +84,6 @@ class OzowRepository {
     _payment.successUrl ??= _payment.notifyUrl;
     _payment.cancelUrl ??= _payment.notifyUrl;
     _payment.errorUrl ??= _payment.notifyUrl;
-
     const countryCode = 'ZA';
     const currencyCode = 'ZAR';
 

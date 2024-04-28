@@ -1,15 +1,13 @@
-// Copyright 2023 UnderFlow SA
-// Use of this source code is governed by a MIT license that can be
-// found in the LICENSE file.
+import 'package:flutter_ozow/flutter_ozow.dart';
 
-class OzowTransactionModel {
+class OzowTransaction {
   final String transactionId;
   final String transactionReference;
   final String currencyCode;
   final double amount;
-  final String verifiedStatus;
+  final OzowStatus verifiedStatus;
 
-  OzowTransactionModel({
+  OzowTransaction({
     required this.transactionId,
     required this.transactionReference,
     required this.currencyCode,
@@ -17,13 +15,13 @@ class OzowTransactionModel {
     required this.verifiedStatus,
   });
 
-  factory OzowTransactionModel.fromJson(Map<String, dynamic> json) {
-    return OzowTransactionModel(
+  factory OzowTransaction.fromJson(Map<String, dynamic> json) {
+    return OzowTransaction(
       transactionId: json['transactionId'],
       transactionReference: json['transactionReference'],
       currencyCode: json['currencyCode'],
       amount: json['amount'],
-      verifiedStatus: json['status'],
+      verifiedStatus: ozowStatusFromStr(json['status']),
     );
   }
 

@@ -1,8 +1,7 @@
 name: flutter_ozow
 description: A simple flutter plugin to integrate Ozow payment gateway into your flutter app.
-version: 1.1.6
-homepage: "https://under-flow.info"
-repository: "https://github.com/under-flow-tech/flutter_ozow.git"
+version: 1.1.7
+repository: 'https://github.com/under-flow-tech/flutter_ozow.git'
 
 environment:
   sdk: '>=3.1.0 <4.0.0'
@@ -10,8 +9,8 @@ environment:
 
 dependencies:
   crypto: ^3.0.3
-  dartz: ^0.10.1
-  dio: ^5.4.1
+  either_dart: ^1.0.0
+  dio: ^5.4.3+1
   flutter:
     sdk: flutter
   webview_flutter: ^4.7.0
@@ -21,7 +20,8 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^3.0.1
   mockito: ^5.4.4
-  build_runner: ^2.4.8
+  build_runner: ^2.4.9
+  melos: ^6.0.0
 
 
 flutter:
@@ -35,9 +35,13 @@ flutter:
     - packages/flutter_ozow/assets/success.png
     - packages/flutter_ozow/assets/expired.png
 
-  # topics:
-  #   - payment
-  #   - ozow
-  #   - payment
-  #   - stripe
-  #   - paypal
+platforms:
+  android:
+  ios:
+
+topics:
+  - payment
+  - ozow
+  - payment
+  - stripe
+  - paypal

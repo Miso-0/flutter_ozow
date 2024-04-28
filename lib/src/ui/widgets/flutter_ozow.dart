@@ -2,15 +2,13 @@
 // Use of this source code is governed by a MIT license that can be
 // found in the LICENSE file.
 import 'package:flutter/material.dart';
-import 'package:flutter_ozow/src/domain/entities/ozow_payment.dart';
-import 'package:flutter_ozow/src/domain/entities/ozow_status.dart';
-import 'package:flutter_ozow/src/domain/entities/ozow_transaction.dart';
-import 'package:flutter_ozow/src/presentation/controllers/flutter_ozow_controller.dart';
-import 'package:flutter_ozow/src/presentation/widgets/flutter_ozow_loading_indicator.dart';
-import 'package:flutter_ozow/src/presentation/widgets/flutter_ozow_status.dart';
+import 'package:flutter_ozow/src/data/models/ozow_payment.dart';
+import 'package:flutter_ozow/src/data/models/ozow_status.dart';
+import 'package:flutter_ozow/src/data/models/ozow_transaction.dart';
+import 'package:flutter_ozow/src/ui/controllers/flutter_ozow_controller.dart';
+import 'package:flutter_ozow/src/ui/widgets/status.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'flutter_ozow_linear_loading_indicator.dart';
-import 'flutter_ozow_web_view.dart';
+import 'web_view.dart';
 
 /// The `FlutterOzow` widget integrates Ozow payment gateway through a WebView.
 ///
@@ -200,7 +198,7 @@ class _FlutterOzowState extends State<FlutterOzow> {
       mainAxisSize: MainAxisSize.min,
       children: [
         // Display a progress indicator with custom color.
-        FlutterOzowLinearLoadingIndicator(progress: progress),
+        _LinearLoadingIndicator(progress: progress),
         // Show the WebViewWidget when both '_status' is null and '_isLoading' is false.
         // This implies that there is no current status and loading is complete.
         if (!_isLoading && ozowController.controller != null && _status == null)
@@ -209,11 +207,11 @@ class _FlutterOzowState extends State<FlutterOzow> {
         // Show a loading indicator when '_isLoading' is true.
         // This implies that some data or UI is being loaded.
         else if (_isLoading)
-          const FlutterOzowLoadingIndicator()
+          const _FlutterOzowLoadingIndicator()
 
         // Show FlutterOzowStatus when '_status' is not null.
         // This implies that there is a status to be displayed (e.g., error, success).
-        else 
+        else
           //if the onCompleteWidget is not null, call it
           //with the status of the transaction
           FlutterOzowStatus(status: _status),
@@ -242,7 +240,7 @@ class _FlutterOzowState extends State<FlutterOzow> {
       res.fold((status) {
         if (widget.onError != null) {
           widget.onError!(
-            'flutter_ozow: Error verifying payment',
+            'flutter_ozow -> change handler: Error verifying payment',
             null,
           );
         }
@@ -264,5 +262,76 @@ class _FlutterOzowState extends State<FlutterOzow> {
         }
       });
     }
+  }
+}
+
+class _LinearLoadingIndicator extends StatelessWidget {
+  const _LinearLoadingIndicator({required this.progress});
+
+  final int progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return LinearProgressIndicator(
+      value: progress / 100,
+      backgroundColor: Colors.transparent,
+      color: const Color.fromRGBO(0, 222, 140, 1),
+    );
+  }
+}
+
+/// The `_FlutterOzowLoadingIndicator` widget displays the status of the payment.
+///
+class _FlutterOzowLoadingIndicator extends StatelessWidget {
+  const _FlutterOzowLoadingIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 50),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              child: Image.asset(
+                "assets/backgroud.png",
+                package: "flutter_ozow",
+                fit: BoxFit.fitWidth,
+              ),
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            SizedBox(
+              height: 80,
+              width: 80,
+              child: Image.asset(
+                "assets/loading_gif.gif",
+                package: "flutter_ozow",
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Container(
+              width: 250,
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 5),
+              child: Text(
+                "Hold on while we process your payment.",
+                style: TextStyle(
+                  color: Colors.blueGrey.shade500,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
