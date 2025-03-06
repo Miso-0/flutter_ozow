@@ -21,7 +21,7 @@ class OzowRepository {
   ///
   Future<Either<OzowStatus, String>> generateLink() async {
     if (kDebugMode) {
-      print('map: ${_paymentMap()}');
+      print('map: ${jsonEncode(_paymentMap())}');
     }
 
     final link = await _dataProvider.generatePaymentLink(

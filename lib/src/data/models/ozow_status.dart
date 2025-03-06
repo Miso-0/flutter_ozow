@@ -21,9 +21,7 @@ enum OzowStatus {
         return 'Pending';
       case OzowStatus.error:
         return 'Error';
-      default:
-        return 'Error';
-    }
+      }
   }
 }
 
